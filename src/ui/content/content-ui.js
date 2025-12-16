@@ -79,7 +79,7 @@ class ContentUI {
         if (this.iconTimeout) clearTimeout(this.iconTimeout);
         this.iconTimeout = setTimeout(() => {
             this.removeIcon();
-        }, 5000);
+        }, 2500);
     }
 
     /**
