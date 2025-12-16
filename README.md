@@ -78,3 +78,6 @@ To use **Gemini** or **OpenAI**:
 4.  Click **Save Settings**. You're set!
 
 ---
+
+## Stargazers over time
+[![Stargazers over time](https://starchart.cc/marx5/browser-translate-extension.svg?variant=adaptive)](https://starchart.cc/marx5/browser-translate-extension)
