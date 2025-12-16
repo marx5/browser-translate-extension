@@ -26,18 +26,6 @@ const LOCALES = {
         openSettings: 'Settings',
         errorMessage: 'Translation failed. Please try again.',
         fallbackNotice: '⚠️ API Limit/Error: {error}\n🔄 Switched to Google Translate.',
-        languages: {
-            auto: 'Auto Detect',
-            en: 'English',
-            vi: 'Vietnamese',
-            ja: 'Japanese',
-            ko: 'Korean',
-            zhCN: 'Chinese',
-            fr: 'French',
-            es: 'Spanish',
-            de: 'German',
-            ru: 'Russian'
-        },
         service: {
             google: 'Google Translate',
             gemini: 'Gemini AI',
@@ -79,18 +67,6 @@ const LOCALES = {
         openSettings: 'Cài đặt',
         errorMessage: 'Dịch thất bại. Vui lòng thử lại.',
         fallbackNotice: '⚠️ Lỗi API: {error}\n🔄 Đã tự động chuyển sang Google Translate.',
-        languages: {
-            auto: 'Tự động phát hiện',
-            en: 'Tiếng Anh',
-            vi: 'Tiếng Việt',
-            ja: 'Tiếng Nhật',
-            ko: 'Tiếng Hàn',
-            zhCN: 'Tiếng Trung',
-            fr: 'Tiếng Pháp',
-            es: 'Tiếng Tây Ban Nha',
-            de: 'Tiếng Đức',
-            ru: 'Tiếng Nga'
-        },
         service: {
             google: 'Google Dịch',
             gemini: 'Gemini AI',

@@ -18,34 +18,20 @@ class GoogleTranslator extends BaseTranslator {
      * @param {string} targetLang
      * @returns {Promise<TranslationResult>}
      */
-    async translate(text, sourceLang, targetLang, uiLanguage = 'en') {
+    async translate(text, sourceLang, targetLang) {
         this.validateParams(text, sourceLang, targetLang);
 
         const url = this.buildUrl(text, sourceLang, targetLang);
+        const response = await fetch(url);
 
-        try {
-            const response = await fetch(url);
-
-            if (!response.ok) {
-                if (response.status === 429) {
-                    const strings = LOCALES[uiLanguage] || LOCALES.en;
-                    throw new Error(strings.errors.rateLimit);
-                }
-                throw new Error(`Google Translate API error: ${response.status}`);
-            }
-
-            const data = await response.json();
-            const result = this.parseResponse(data, sourceLang);
-
-            return this.enrichWithPhonetics(result, text, sourceLang, targetLang);
-        } catch (error) {
-            const strings = LOCALES[uiLanguage] || LOCALES.en;
-            if (error.message.startsWith('❌') || error.message.startsWith('⏱️') || error.message.startsWith('📊') || error.message.startsWith('🔒') || error.message.startsWith('🔧') || error.message.startsWith('🔑') || error.message.startsWith('🌐')) {
-                throw error; // Already localized
-            }
-            // Google usually failures are network or strict rate limits if using free endpoint heavily
-            throw new Error(`${strings.service.google} error: ${error.message}`);
+        if (!response.ok) {
+            throw new Error(`Google Translate API error: ${response.status}`);
         }
+
+        const data = await response.json();
+        const result = this.parseResponse(data, sourceLang);
+
+        return this.enrichWithPhonetics(result, text, sourceLang, targetLang);
     }
 
     /**

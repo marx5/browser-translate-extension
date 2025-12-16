@@ -31,8 +31,7 @@ class TranslatePopup extends BaseComponent {
             this.settings.targetLang,
             (lang) => this.handleSourceChange(lang),
             (lang) => this.handleTargetChange(lang),
-            () => this.handleSwap(),
-            this.settings.uiLanguage || 'en'
+            () => this.handleSwap()
         );
 
         this.translationResult = new TranslationResult({

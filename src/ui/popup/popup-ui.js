@@ -320,13 +320,13 @@ class PopupUI {
 
         let msg = strings.errorMessage; // Default localized error
 
-        if (error && error.message) {
-            msg = error.message;
-            // If it's a "Translation failed" generic from somewhere, we might prefer our localized default
-            if (msg === 'Translation failed') msg = strings.errorMessage;
-        }
+        // If error message has specific content we might want to show it
+        // Check if error is simple string or object
 
         this.translatedText.textContent = msg;
+        // Or if we want to show technical details:
+        // this.translatedText.textContent = `${strings.errorMessage} (${error.message})`;
+
         this.phoneticText.textContent = '';
         this.sourcePhonetic.textContent = '';
         this.resultArea.classList.remove('hidden');
