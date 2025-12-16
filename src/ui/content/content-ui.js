@@ -103,8 +103,15 @@ class ContentUI {
      * @param {Event} event
      */
     async showPopup(text, event) {
-        // Get position BEFORE removing icon from DOM
-        const iconRect = event.target.getBoundingClientRect();
+        // Get user selection range for better positioning if possible
+        let targetRect;
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            targetRect = selection.getRangeAt(0).getBoundingClientRect();
+        } else {
+            // Fallback to event target (icon)
+            targetRect = event.target.getBoundingClientRect();
+        }
 
         this.removeIcon(); // This will also clear the timeout
         this.removePopup();
@@ -118,14 +125,30 @@ class ContentUI {
             onSpeak: (text, lang) => this.controller.speak(text, lang)
         });
 
+        // Mount first to render content and get dimensions
         this.currentPopup.mount(document.body);
 
-        // Position popup
-        const pos = PositionUtils.calculatePopupPosition(iconRect);
-        this.currentPopup.setPosition(pos.left, pos.top, pos.maxHeight, pos.transform);
+        // Apply Absolute positioning to scroll with page
+        this.currentPopup.element.style.position = 'absolute';
+        this.currentPopup.element.style.zIndex = '2147483647';
+
+        this.targetRect = targetRect; // Store for repositioning
+        this.repositionPopup();
 
         // Initial translation
         await this.performTranslation(text);
+    }
+
+    /**
+     * Re-calculate and apply popup position
+     */
+    repositionPopup() {
+        if (!this.currentPopup || !this.currentPopup.element || !this.targetRect) return;
+
+        const popupRect = this.currentPopup.element.getBoundingClientRect();
+        const pos = PositionUtils.calculatePopupPosition(this.targetRect, popupRect);
+
+        this.currentPopup.setPosition(pos.left + window.scrollX, pos.top + window.scrollY);
     }
 
     /**
@@ -137,6 +160,7 @@ class ContentUI {
             this.currentPopup = null;
         }
         this.controller.stopSpeech();
+        this.targetRect = null;
     }
 
     /**
@@ -147,6 +171,8 @@ class ContentUI {
         if (!this.currentPopup) return;
 
         this.currentPopup.showLoading();
+        // Reposition on loading state too (size might change)
+        this.repositionPopup();
 
         try {
             const result = await this.controller.translate(
@@ -159,10 +185,13 @@ class ContentUI {
             // Check if popup is still open
             if (this.currentPopup) {
                 this.currentPopup.displayResult(result);
+                // Reposition after content update (crucial for size changes)
+                this.repositionPopup();
             }
         } catch (error) {
             if (this.currentPopup) {
                 this.currentPopup.displayError(error);
+                this.repositionPopup();
             }
         }
     }

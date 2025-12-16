@@ -56,7 +56,8 @@ class TranslatePopup extends BaseComponent {
         header.appendChild(this.languageSelector.render());
 
         // 3. Close Button
-        const closeBtn = DOMUtils.createElement('button', 'inline-header-close', '×');
+        const closeBtn = DOMUtils.createElement('button', 'inline-header-close');
+        closeBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
         closeBtn.title = 'Close';
         this.addEventListener(closeBtn, 'click', () => this.handleClose());
         header.appendChild(closeBtn);
@@ -72,7 +73,8 @@ class TranslatePopup extends BaseComponent {
         textMain.innerHTML = DOMUtils.escapeHtml(this.selectedText);
 
         const actions = DOMUtils.createElement('div', 'inline-text-actions');
-        const speakBtn = DOMUtils.createElement('button', 'inline-icon-btn', '🔊');
+        const speakBtn = DOMUtils.createElement('button', 'inline-icon-btn');
+        speakBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`;
         speakBtn.title = 'Speak';
         this.addEventListener(speakBtn, 'click', () => this.handleSpeakSource());
 
@@ -195,16 +197,28 @@ class TranslatePopup extends BaseComponent {
         this.translationResult.displayError(error);
     }
 
-    setPosition(x, y, maxHeight, transform) {
+    setPosition(x, y) {
         if (this.element) {
             this.element.style.left = `${x}px`;
             this.element.style.top = `${y}px`;
-            if (maxHeight) {
-                this.element.style.maxHeight = `${maxHeight}px`;
-            }
-            if (transform) {
-                this.element.style.transform = transform;
-            }
+            // Reset transform if it was set by animation or previous logic, 
+            // but keep animation transform if needed. 
+            // Actually, with fixed positioning calculated exactly, 
+            // we should probably ensure no extra transform messes it up.
+            // The slideUp animation uses translateY. 
+            // If we want to keep animation, we should not set transform here unless necessary.
+            this.element.style.transform = 'none';
+            // Re-apply animation if needed or just let it be. 
+            // Note: If we set transform to 'none', it kills the entrance animation unless 
+            // we are careful. But user logic implies exact positioning.
+            // To be safe and follow "Standard", we set left/top.
+            // If we want to keep slide-up animation, remove the transform override 
+            // or ensure the keyframes work with fixed positioning.
+            // For now, removing the transform override implies accepting CSS animation.
+            // But previous code set 'transform' explicitly for "Above" positioning.
+            // Since we handle "Above" by changing 'top', we don't need translateY(-100%).
+            // So we can remove the explicit transform setting.
+            this.element.style.transform = '';
         }
     }
 }

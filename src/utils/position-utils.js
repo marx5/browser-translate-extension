@@ -9,52 +9,48 @@ class PositionUtils {
      * @param {number} popupHeight
      * @returns {{left: number, top: number}}
      */
-    static calculatePopupPosition(iconRect, popupWidth = 400) {
-        const margin = 10;
-        const viewportWidth = window.innerWidth;
+    /**
+     * Calculate popup position suitable for fixed positioning
+     * @param {DOMRect} targetRect - The bounding rect of the selection or target element
+     * @param {DOMRect} popupRect - The bounding rect of the rendered popup
+     * @returns {{left: number, top: number}}
+     */
+    static calculatePopupPosition(targetRect, popupRect) {
+        // Use clientWidth to exclude scrollbar width, preventing overlap
+        const viewportWidth = document.documentElement.clientWidth;
         const viewportHeight = window.innerHeight;
-        const scrollX = window.scrollX;
-        const scrollY = window.scrollY;
 
-        // 1. Calculate Left
-        let left = iconRect.left + scrollX;
+        const popupWidth = popupRect.width;
+        const popupHeight = popupRect.height;
+        const margin = 10; // Increased margin slightly to 10 for safety
 
-        // Prevent overflowing right edge
-        if (left + popupWidth > scrollX + viewportWidth - margin) {
-            left = scrollX + viewportWidth - popupWidth - margin;
+        // Initial position (below selection)
+        let top = targetRect.bottom + margin;
+        let left = targetRect.left;
+
+        // 1. Horizontal Constraint (Right)
+        if (left + popupWidth > viewportWidth - margin) {
+            left = viewportWidth - popupWidth - margin;
         }
 
-        // Prevent overflowing left edge
-        if (left < scrollX + margin) {
-            left = scrollX + margin;
+        // 2. Horizontal Constraint (Left)
+        if (left < margin) {
+            left = margin;
         }
 
-        // 2. Vertical Calculation
-        const spaceBelow = viewportHeight - iconRect.bottom - margin;
-        const spaceAbove = iconRect.top - margin;
-
-        // Decide placement
-        // Default to below if there's enough space (e.g. > 250px) or if it's larger than space above
-        const minHeightBelow = 250;
-
-        let top, maxHeight, transform;
-
-        if (spaceBelow >= minHeightBelow || spaceBelow >= spaceAbove) {
-            // Place BELOW
-            top = iconRect.bottom + scrollY + 8;
-            maxHeight = spaceBelow;
-            transform = 'none';
-        } else {
-            // Place ABOVE
-            // Position at top of icon minus gap, and translate up by 100%
-            top = iconRect.top + scrollY - 8;
-            maxHeight = spaceAbove;
-            transform = 'translateY(-100%)';
+        // 3. Vertical Constraint (Bottom) -> flip to top
+        if (top + popupHeight > viewportHeight - margin) {
+            // Check if there is space above
+            // If flipping above puts it offscreen top, we might need other logic, 
+            // but standard 'flip' is requested.
+            top = targetRect.top - popupHeight - margin;
         }
 
-        // Ensure absolute minimum max-height to avoid tiny popups
-        maxHeight = Math.max(maxHeight, 150);
+        // 4. Vertical Constraint (Top)
+        if (top < margin) {
+            top = margin;
+        }
 
-        return { left, top, maxHeight, transform };
+        return { left, top };
     }
 }
