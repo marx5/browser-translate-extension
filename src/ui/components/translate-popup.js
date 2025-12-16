@@ -35,15 +35,12 @@ class TranslatePopup extends BaseComponent {
         );
 
         this.translationResult = new TranslationResult({
-            onSpeak: (text) => this.handleSpeakResult(text),
-            uiLanguage: this.settings.uiLanguage || 'en'
+            onSpeak: (text) => this.handleSpeakResult(text)
         });
     }
 
     render() {
         this.element = DOMUtils.createElement('div', 'inline-translate-popup');
-
-        const strings = LOCALES[this.settings.uiLanguage || 'en'] || LOCALES.en;
 
         const content = DOMUtils.createElement('div', 'inline-popup-content');
 
@@ -51,16 +48,16 @@ class TranslatePopup extends BaseComponent {
         const header = DOMUtils.createElement('div', 'inline-header-row');
 
         // 1. Service Selector
-        // Pass uiLanguage to ServiceSelector
-        this.serviceSelector.setUiLanguage(this.settings.uiLanguage || 'en');
+        // ServiceSelector.render() returns a div.inline-service-selector
         header.appendChild(this.serviceSelector.render());
 
         // 2. Language Selector
+        // LanguageSelector.render() returns a div.inline-language-selector
         header.appendChild(this.languageSelector.render());
 
         // 3. Close Button
         const closeBtn = DOMUtils.createElement('button', 'inline-header-close', '×');
-        closeBtn.title = strings.close;
+        closeBtn.title = 'Close';
         this.addEventListener(closeBtn, 'click', () => this.handleClose());
         header.appendChild(closeBtn);
 
@@ -68,7 +65,7 @@ class TranslatePopup extends BaseComponent {
 
         // Original Text Section
         const textSection = DOMUtils.createElement('div', 'inline-text-section');
-        const label = DOMUtils.createElement('div', 'inline-section-label', strings.originalLabel);
+        const label = DOMUtils.createElement('div', 'inline-section-label', 'ORIGINAL');
 
         const textContent = DOMUtils.createElement('div', 'inline-text-content');
         const textMain = DOMUtils.createElement('div', 'inline-text-main');
@@ -76,7 +73,7 @@ class TranslatePopup extends BaseComponent {
 
         const actions = DOMUtils.createElement('div', 'inline-text-actions');
         const speakBtn = DOMUtils.createElement('button', 'inline-icon-btn', '🔊');
-        speakBtn.title = strings.speak;
+        speakBtn.title = 'Speak';
         this.addEventListener(speakBtn, 'click', () => this.handleSpeakSource());
 
         actions.appendChild(speakBtn);

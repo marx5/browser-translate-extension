@@ -19,17 +19,10 @@ class ServiceSelector extends BaseComponent {
         select.id = 'inlineServiceSelect';
 
         const services = getAllServices();
-        const strings = LOCALES[this.uiLanguage || 'en'] || LOCALES.en;
-
         services.forEach(service => {
             const option = document.createElement('option');
             option.value = service.id;
-
-            // Use localized name if available, otherwise default name
-            option.textContent = (strings.service && strings.service[service.id])
-                ? strings.service[service.id]
-                : service.name;
-
+            option.textContent = service.name;
             if (service.id === this.currentService) {
                 option.selected = true;
             }
@@ -53,14 +46,6 @@ class ServiceSelector extends BaseComponent {
      */
     getValue() {
         return this.currentService;
-    }
-
-    /**
-     * Set UI Language
-     * @param {string} lang
-     */
-    setUiLanguage(lang) {
-        this.uiLanguage = lang;
     }
 
     /**

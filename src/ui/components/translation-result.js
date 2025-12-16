@@ -10,7 +10,6 @@ class TranslationResult extends BaseComponent {
     constructor(options = {}) {
         super();
         this.onSpeak = options.onSpeak;
-        this.uiLanguage = options.uiLanguage || 'en';
     }
 
     render() {
@@ -25,13 +24,11 @@ class TranslationResult extends BaseComponent {
     displayResult(result) {
         if (!this.element) return;
 
-        const strings = LOCALES[this.uiLanguage] || LOCALES.en;
-
         this.element.innerHTML = '';
 
         const section = DOMUtils.createElement('div', 'inline-text-section');
 
-        const label = DOMUtils.createElement('div', 'inline-section-label', strings.translationLabel);
+        const label = DOMUtils.createElement('div', 'inline-section-label', 'TRANSLATION');
         section.appendChild(label);
 
         const content = DOMUtils.createElement('div', 'inline-text-content');
@@ -42,7 +39,7 @@ class TranslationResult extends BaseComponent {
 
         const actions = DOMUtils.createElement('div', 'inline-text-actions');
         const speakBtn = DOMUtils.createElement('button', 'inline-icon-btn', '🔊');
-        speakBtn.title = strings.speak;
+        speakBtn.title = 'Speak';
         this.addEventListener(speakBtn, 'click', () => {
             if (this.onSpeak) this.onSpeak(result.translation);
         });
@@ -62,7 +59,7 @@ class TranslationResult extends BaseComponent {
         // Fallback notice
         if (result.fallbackNotice) {
             const notice = DOMUtils.createElement('div', 'inline-fallback-notice');
-            notice.textContent = result.fallbackNotice; // This might need localization if generated at service level
+            notice.textContent = result.fallbackNotice;
             section.appendChild(notice);
         }
 
@@ -77,8 +74,6 @@ class TranslationResult extends BaseComponent {
         if (!this.element) return;
         this.element.innerHTML = '';
 
-        // Use localized error prefix/message logic if desired, 
-        // but often error comes with specific message
         const errorDiv = DOMUtils.createElement('div', 'inline-popup-error');
         errorDiv.textContent = ErrorHandler.formatErrorMessage(error);
         this.element.appendChild(errorDiv);
@@ -89,13 +84,10 @@ class TranslationResult extends BaseComponent {
      */
     showLoading() {
         if (!this.element) return;
-
-        const strings = LOCALES[this.uiLanguage] || LOCALES.en;
-
         this.element.innerHTML = `
       <div class="inline-popup-loading" style="display: flex;">
         <div class="inline-loading-spinner"></div>
-        <span>${strings.translating}</span>
+        <span>Translating...</span>
       </div>
     `;
     }

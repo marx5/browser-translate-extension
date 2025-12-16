@@ -28,16 +28,15 @@ class TranslationController {
      * @param {string} sourceLang
      * @param {string} targetLang
      * @param {string} serviceId
-     * @param {string} [uiLanguage]
      * @returns {Promise<TranslationResult>}
      */
-    async translate(text, sourceLang, targetLang, serviceId, uiLanguage = 'en') {
+    async translate(text, sourceLang, targetLang, serviceId) {
         try {
             const translator = this.translationFactory.getTranslator(serviceId);
-            const result = await translator.translate(text, sourceLang, targetLang, uiLanguage);
+            const result = await translator.translate(text, sourceLang, targetLang);
             return result;
         } catch (error) {
-            return this.handleError(error, text, sourceLang, targetLang, serviceId, uiLanguage);
+            return this.handleError(error, text, sourceLang, targetLang, serviceId);
         }
     }
 
@@ -45,7 +44,7 @@ class TranslationController {
      * Handle translation errors with fallback
      * @private
      */
-    async handleError(error, text, sourceLang, targetLang, serviceId, uiLanguage = 'en') {
+    async handleError(error, text, sourceLang, targetLang, serviceId) {
         console.error('Translation error:', error);
 
         const errorInfo = ErrorHandler.handleTranslationError(error, serviceId);
@@ -58,12 +57,8 @@ class TranslationController {
         // Fallback to Google Translate
         try {
             const googleTranslator = this.translationFactory.getTranslator('google');
-            const result = await googleTranslator.translate(text, sourceLang, targetLang, uiLanguage);
-
-            // Localize fallback notice
-            const strings = LOCALES[uiLanguage] || LOCALES.en;
-            result.fallbackNotice = strings.fallbackNotice.replace('{error}', error.message);
-
+            const result = await googleTranslator.translate(text, sourceLang, targetLang);
+            result.fallbackNotice = `⚠️ ${error.message}\n🔄 Đã tự động chuyển sang Google Translate.`;
             return result;
         } catch (fallbackError) {
             throw new Error('All translation services failed');

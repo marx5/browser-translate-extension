@@ -4,18 +4,15 @@
 class TranslateIcon extends BaseComponent {
     /**
      * @param {Function} onClick
-     * @param {string} uiLanguage
      */
-    constructor(onClick, uiLanguage = 'en') {
+    constructor(onClick) {
         super();
         this.onClick = onClick;
-        this.uiLanguage = uiLanguage;
     }
 
     render() {
         this.element = DOMUtils.createElement('button', 'translate-icon-btn');
-        const strings = LOCALES[this.uiLanguage] || LOCALES.en;
-        this.element.title = strings.translateTitle || 'Translate';
+        this.element.title = 'Translate';
 
         const iconImg = document.createElement('img');
         iconImg.src = chrome.runtime.getURL('images/icon16.png');

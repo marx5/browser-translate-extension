@@ -19,16 +19,13 @@ class OpenAITranslator extends BaseTranslator {
      * @param {string} text
      * @param {string} sourceLang
      * @param {string} targetLang
-     * @param {string} [uiLanguage]
      * @returns {Promise<TranslationResult>}
      */
-    async translate(text, sourceLang, targetLang, uiLanguage = 'en') {
+    async translate(text, sourceLang, targetLang) {
         this.validateParams(text, sourceLang, targetLang);
 
-        const strings = LOCALES[uiLanguage || 'en'] || LOCALES.en;
-
         if (!this.apiKey || this.apiKey === 'YOUR_OPENAI_API_KEY_HERE') {
-            throw new Error(strings.errors.apiKeyMissing);
+            throw new Error('OpenAI API key not configured. Please add your API key in Settings.');
         }
 
         const sourceLangName = this.getLanguageName(sourceLang);
@@ -53,7 +50,7 @@ class OpenAITranslator extends BaseTranslator {
             });
 
             if (!response.ok) {
-                throw await this.handleApiError(response, uiLanguage);
+                throw await this.handleApiError(response);
             }
 
             const data = await response.json();
@@ -65,49 +62,95 @@ class OpenAITranslator extends BaseTranslator {
             if (this.isApiKeyError(error)) {
                 throw error;
             }
-            if (error.message.startsWith('❌') || error.message.startsWith('⏱️') || error.message.startsWith('📊') || error.message.startsWith('🔒') || error.message.startsWith('🔧') || error.message.startsWith('🔑') || error.message.startsWith('🌐')) {
-                throw error; // Already localized
-            }
-            throw new Error(`${strings.service.openai} error: ${error.message}`);
+            throw new Error(`OpenAI error: ${error.message}`);
         }
     }
 
-    // ... (buildPrompt and parseResponse remain unchanged)
+    /**
+     * Build translation prompt
+     * @private
+     */
+    buildPrompt(text, sourceLangName, targetLangName) {
+        return `You are a professional translator. Translate the following text from ${sourceLangName} to ${targetLangName}.
+
+Text to translate:
+"""
+${text}
+"""
+
+Instructions:
+1. Translate ALL text content found within the triple quotes.
+2. Preserve existing line breaks and structure.
+3. Provide your response in this exact JSON format:
+{
+  "translation": "the translated text here, preserving line breaks",
+  "sourcePhonetic": "phonetic transcription of source text",
+  "targetPhonetic": "phonetic transcription of translated text"
+}
+
+Only respond with the JSON.`;
+    }
+
+    /**
+     * Parse OpenAI response
+     * @private
+     */
+    parseResponse(data, sourceLang) {
+        let responseText = data.choices[0]?.message?.content || '';
+        responseText = responseText.trim();
+
+        let translation = '';
+        let srcPhonetic = '';
+        let targetPhonetic = '';
+
+        try {
+            // Remove markdown code blocks if present
+            responseText = responseText.replace(/```json\s*|\s*```/g, '');
+            const parsed = JSON.parse(responseText);
+            translation = parsed.translation || '';
+            srcPhonetic = parsed.sourcePhonetic || '';
+            targetPhonetic = parsed.targetPhonetic || '';
+        } catch (e) {
+            // If JSON parsing fails, use the whole response as translation
+            translation = responseText;
+        }
+
+        const detectedLang = sourceLang === 'auto' ? 'en' : sourceLang;
+        return { translation, srcPhonetic, targetPhonetic, detectedLang };
+    }
 
     /**
      * Handle API errors
      * @private
      */
-    async handleApiError(response, uiLanguage) {
+    async handleApiError(response) {
         const errorData = await response.json().catch(() => ({}));
         const errorMessage = errorData.error?.message || '';
         const errorType = errorData.error?.type || '';
         const errorCode = errorData.error?.code || '';
 
-        const strings = LOCALES[uiLanguage || 'en']?.errors || LOCALES.en.errors;
-
         if (response.status === 401) {
             if (errorMessage.includes('Incorrect API key') || errorCode === 'invalid_api_key') {
-                return new Error(strings.apiKeyInvalid);
+                return new Error('❌ OpenAI API key không hợp lệ. Vui lòng kiểm tra lại key trong Tab Settings');
             }
-            return new Error(strings.apiKeyInvalid);
+            return new Error('🔑 OpenAI API: API key không được xác thực. Vui lòng kiểm tra lại trong Settings.');
         } else if (response.status === 429) {
             if (errorMessage.includes('quota') || errorType === 'insufficient_quota') {
-                return new Error(strings.quotaExceeded);
+                return new Error('📊 OpenAI API: Đã hết quota/credits. Vui lòng nạp thêm credits hoặc chọn dịch vụ khác.');
             }
             if (errorMessage.includes('Rate limit')) {
-                return new Error(strings.rateLimit);
+                return new Error('⏱️ OpenAI API: Đã vượt quá giới hạn số lượt gọi. Vui lòng thử lại sau vài giây.');
             }
-            return new Error(strings.rateLimit);
+            return new Error('⏱️ OpenAI API: Quá nhiều yêu cầu. Vui lòng thử lại sau.');
         } else if (response.status === 403) {
-            return new Error(strings.forbidden);
+            return new Error('🔒 OpenAI API: Không có quyền truy cập. Vui lòng kiểm tra API key và quyền hạn.');
         } else if (response.status === 400) {
-            return new Error(`${strings.unknown}: ${errorMessage || 'Bad Request'}`);
+            return new Error(`❌ OpenAI API lỗi: ${errorMessage || 'Yêu cầu không hợp lệ'}`);
         } else if (response.status >= 500) {
-            return new Error(strings.serverError);
+            return new Error('🔧 OpenAI API: Lỗi máy chủ. Vui lòng thử lại sau.');
         }
 
-        return new Error(`${strings.unknown} (${response.status}): ${errorMessage || response.statusText}`);
+        return new Error(`❌ OpenAI API lỗi (${response.status}): ${errorMessage || response.statusText}`);
     }
 
     /**

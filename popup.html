@@ -11,8 +11,8 @@
 <body>
   <div class="header">
     <div class="top-row">
-      <button class="icon-btn back-btn hidden" id="backToTranslateBtn" title="Back" data-i18n-title="back">⬅️</button>
-      <h3 class="settings-title hidden" id="settingsTitle" data-i18n="settingsTitle">Settings</h3>
+      <button class="icon-btn back-btn hidden" id="backToTranslateBtn" title="Back">⬅️</button>
+      <h3 class="settings-title hidden" id="settingsTitle">Settings</h3>
       <div class="service-selector">
         <select id="translationService">
           <option value="google">Google Translate</option>
@@ -21,8 +21,7 @@
           <option value="mymemory">MyMemory</option>
         </select>
       </div>
-      <button class="icon-btn settings-btn" id="openSettingsBtn" title="Settings"
-        data-i18n-title="openSettings">⚙️</button>
+      <button class="icon-btn settings-btn" id="openSettingsBtn" title="Settings">⚙️</button>
     </div>
     <div class="language-selector">
       <select id="sourceLang">
@@ -57,33 +56,30 @@
     <div id="translate-view" class="view-content active">
       <div class="input-area">
         <div class="text-header">
-          <button class="speaker-btn" id="speakSource" title="Speak original text" data-i18n-title="speak">🔊</button>
+          <button class="speaker-btn" id="speakSource" title="Speak original text">🔊</button>
         </div>
-        <textarea id="inputText" placeholder="Enter text or select text on page..."
-          data-i18n-placeholder="inputPlaceholder"></textarea>
+        <textarea id="inputText" placeholder="Enter text or select text on page..."></textarea>
         <div class="phonetic-container">
           <span class="phonetic" id="sourcePhonetic"></span>
-          <button class="phonetic-copy-btn hidden" id="copySourcePhonetic" title="Copy phonetic"
-            data-i18n-title="copy">📋</button>
+          <button class="phonetic-copy-btn hidden" id="copySourcePhonetic" title="Copy phonetic">📋</button>
         </div>
       </div>
 
-      <button id="translateBtn" data-i18n="translateBtn">Translate</button>
+      <button id="translateBtn">Translate</button>
 
       <div class="result-area hidden" id="resultArea">
         <div class="result-card">
           <div class="result-header">
-            <div class="result-label" data-i18n="translationLabel">Translation</div>
+            <div class="result-label">Translation</div>
             <div class="result-actions">
-              <button class="icon-btn" id="copyTarget" title="Copy translation" data-i18n-title="copy">📋</button>
-              <button class="icon-btn" id="speakTarget" title="Speak translation" data-i18n-title="speak">🔊</button>
+              <button class="icon-btn" id="copyTarget" title="Copy translation">📋</button>
+              <button class="icon-btn" id="speakTarget" title="Speak translation">🔊</button>
             </div>
           </div>
           <div class="result-text" id="translatedText"></div>
           <div class="phonetic-container">
             <span class="phonetic" id="phoneticText"></span>
-            <button class="phonetic-copy-btn hidden" id="copyPhonetic" title="Copy phonetic"
-              data-i18n-title="copy">📋</button>
+            <button class="phonetic-copy-btn hidden" id="copyPhonetic" title="Copy phonetic">📋</button>
           </div>
         </div>
       </div>
@@ -95,33 +91,24 @@
     <div id="settings-view" class="view-content hidden">
       <div class="settings-form">
         <div class="form-group">
-          <label for="uiLanguage" data-i18n="interfaceLanguage">Interface Language</label>
-          <select id="uiLanguage">
-            <option value="en">English</option>
-            <option value="vi">Tiếng Việt</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="geminiApiKey" data-i18n="geminiApiKey">Gemini API Key</label>
+          <label for="geminiApiKey">Gemini API Key</label>
           <input type="password" id="geminiApiKey" placeholder="Enter Gemini API Key">
-          <div class="helper-text" data-i18n="requiredGemini">Required for Gemini translation</div>
+          <div class="helper-text">Required for Gemini translation</div>
         </div>
 
         <div class="form-group">
-          <label for="openaiApiKey" data-i18n="openaiApiKey">OpenAI API Key</label>
+          <label for="openaiApiKey">OpenAI API Key</label>
           <input type="password" id="openaiApiKey" placeholder="Enter OpenAI API Key">
-          <div class="helper-text" data-i18n="requiredOpenAI">Required for OpenAI translation</div>
+          <div class="helper-text">Required for OpenAI translation</div>
         </div>
 
-        <button id="saveSettingsBtn" data-i18n="saveSettings">Save Settings</button>
-        <div id="saveStatus" class="save-status hidden" data-i18n="saveSuccess">Settings saved!</div>
+        <button id="saveSettingsBtn">Save Settings</button>
+        <div id="saveStatus" class="save-status hidden">Settings saved!</div>
       </div>
     </div>
   </div>
 
 
-  <script src="src/constants/locales.js"></script>
   <script src="src/constants/languages.js"></script>
   <script src="src/constants/services.js"></script>
   <script src="src/constants/ui-constants.js"></script>

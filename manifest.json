@@ -29,7 +29,6 @@
       ],
       "js": [
         "src/constants/languages.js",
-        "src/constants/locales.js",
         "src/constants/services.js",
         "src/constants/ui-constants.js",
         "src/utils/dom-utils.js",

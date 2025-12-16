@@ -28,11 +28,10 @@ class BaseTranslator {
      * @param {string} text - Text to translate
      * @param {string} sourceLang - Source language code
      * @param {string} targetLang - Target language code
-     * @param {string} [uiLanguage] - UI language code for localized errors
      * @returns {Promise<TranslationResult>}
      * @abstract
      */
-    async translate(text, sourceLang, targetLang, uiLanguage = 'en') {
+    async translate(text, sourceLang, targetLang) {
         throw new Error('translate() must be implemented by subclass');
     }
 

@@ -68,7 +68,7 @@ class ContentUI {
     showIcon(x, y, text) {
         this.currentIcon = new TranslateIcon((e) => {
             this.showPopup(text, e);
-        }, this.settings.uiLanguage || 'en');
+        });
 
         this.currentIcon.mount(document.body);
 
@@ -153,8 +153,7 @@ class ContentUI {
                 text,
                 this.settings.sourceLang,
                 this.settings.targetLang,
-                this.settings.translationService,
-                this.settings.uiLanguage || 'en'
+                this.settings.translationService
             );
 
             // Check if popup is still open
