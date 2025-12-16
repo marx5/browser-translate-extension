@@ -12,7 +12,7 @@ body {
   width: 350px;
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Noto Sans', 'Inter', 'Roboto', 'Segoe UI', 'Arial', system-ui, sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
 }
@@ -208,7 +208,7 @@ button:hover {
 .phonetic {
   font-size: 13px;
   color: var(--secondary-text);
-  font-style: italic;
+  font-style: normal;
   white-space: pre-wrap;
   flex: 1;
 }
