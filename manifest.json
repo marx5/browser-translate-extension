@@ -1,0 +1,79 @@
+{
+  "manifest_version": 3,
+  "name": "Translation Extension",
+  "version": "1.0",
+  "description": "A modern translation extension.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "src/constants/languages.js",
+        "src/constants/locales.js",
+        "src/constants/services.js",
+        "src/constants/ui-constants.js",
+        "src/utils/dom-utils.js",
+        "src/utils/position-utils.js",
+        "src/utils/error-handler.js",
+        "src/services/phonetic-service.js",
+        "src/services/speech-service.js",
+        "src/services/storage-service.js",
+        "src/services/clipboard-service.js",
+        "src/services/translation/base-translator.js",
+        "src/services/translation/google-translator.js",
+        "src/services/translation/gemini-translator.js",
+        "src/services/translation/openai-translator.js",
+        "src/services/translation/mymemory-translator.js",
+        "src/services/translation/translation-factory.js",
+        "src/controllers/translation-controller.js",
+        "src/ui/components/base-component.js",
+        "src/ui/components/service-selector.js",
+        "src/ui/components/language-selector.js",
+        "src/ui/components/translate-icon.js",
+        "src/ui/components/translation-result.js",
+        "src/ui/components/translate-popup.js",
+        "src/ui/content/content-ui.js",
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "images/*.png"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}

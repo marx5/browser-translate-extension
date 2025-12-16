@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Translator</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+  <div class="header">
+    <div class="top-row">
+      <button class="icon-btn back-btn hidden" id="backToTranslateBtn" title="Back" data-i18n-title="back">⬅️</button>
+      <h3 class="settings-title hidden" id="settingsTitle" data-i18n="settingsTitle">Settings</h3>
+      <div class="service-selector">
+        <select id="translationService">
+          <option value="google">Google Translate</option>
+          <option value="gemini">Gemini AI</option>
+          <option value="openai">OpenAI</option>
+          <option value="mymemory">MyMemory</option>
+        </select>
+      </div>
+      <button class="icon-btn settings-btn" id="openSettingsBtn" title="Settings"
+        data-i18n-title="openSettings">⚙️</button>
+    </div>
+    <div class="language-selector">
+      <select id="sourceLang">
+        <option value="auto">Auto Detect</option>
+        <option value="en">English</option>
+        <option value="vi">Vietnamese</option>
+        <option value="ja">Japanese</option>
+        <option value="ko">Korean</option>
+        <option value="zh-CN">Chinese</option>
+        <option value="fr">French</option>
+        <option value="es">Spanish</option>
+        <option value="de">German</option>
+        <option value="ru">Russian</option>
+      </select>
+      <button class="swap-btn" id="swapLangs" title="Swap languages">⇄</button>
+      <select id="targetLang">
+        <option value="vi" selected>Vietnamese</option>
+        <option value="en">English</option>
+        <option value="ja">Japanese</option>
+        <option value="ko">Korean</option>
+        <option value="zh-CN">Chinese</option>
+        <option value="fr">French</option>
+        <option value="es">Spanish</option>
+        <option value="de">German</option>
+        <option value="ru">Russian</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Translate View -->
+    <div id="translate-view" class="view-content active">
+      <div class="input-area">
+        <div class="text-header">
+          <button class="speaker-btn" id="speakSource" title="Speak original text" data-i18n-title="speak">🔊</button>
+        </div>
+        <textarea id="inputText" placeholder="Enter text or select text on page..."
+          data-i18n-placeholder="inputPlaceholder"></textarea>
+        <div class="phonetic-container">
+          <span class="phonetic" id="sourcePhonetic"></span>
+          <button class="phonetic-copy-btn hidden" id="copySourcePhonetic" title="Copy phonetic"
+            data-i18n-title="copy">📋</button>
+        </div>
+      </div>
+
+      <button id="translateBtn" data-i18n="translateBtn">Translate</button>
+
+      <div class="result-area hidden" id="resultArea">
+        <div class="result-card">
+          <div class="result-header">
+            <div class="result-label" data-i18n="translationLabel">Translation</div>
+            <div class="result-actions">
+              <button class="icon-btn" id="copyTarget" title="Copy translation" data-i18n-title="copy">📋</button>
+              <button class="icon-btn" id="speakTarget" title="Speak translation" data-i18n-title="speak">🔊</button>
+            </div>
+          </div>
+          <div class="result-text" id="translatedText"></div>
+          <div class="phonetic-container">
+            <span class="phonetic" id="phoneticText"></span>
+            <button class="phonetic-copy-btn hidden" id="copyPhonetic" title="Copy phonetic"
+              data-i18n-title="copy">📋</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="error-message hidden" id="errorMessage"></div>
+    </div>
+
+    <!-- Settings View -->
+    <div id="settings-view" class="view-content hidden">
+      <div class="settings-form">
+        <div class="form-group">
+          <label for="uiLanguage" data-i18n="interfaceLanguage">Interface Language</label>
+          <select id="uiLanguage">
+            <option value="en">English</option>
+            <option value="vi">Tiếng Việt</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="geminiApiKey" data-i18n="geminiApiKey">Gemini API Key</label>
+          <input type="password" id="geminiApiKey" placeholder="Enter Gemini API Key">
+          <div class="helper-text" data-i18n="requiredGemini">Required for Gemini translation</div>
+        </div>
+
+        <div class="form-group">
+          <label for="openaiApiKey" data-i18n="openaiApiKey">OpenAI API Key</label>
+          <input type="password" id="openaiApiKey" placeholder="Enter OpenAI API Key">
+          <div class="helper-text" data-i18n="requiredOpenAI">Required for OpenAI translation</div>
+        </div>
+
+        <button id="saveSettingsBtn" data-i18n="saveSettings">Save Settings</button>
+        <div id="saveStatus" class="save-status hidden" data-i18n="saveSuccess">Settings saved!</div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="src/constants/locales.js"></script>
+  <script src="src/constants/languages.js"></script>
+  <script src="src/constants/services.js"></script>
+  <script src="src/constants/ui-constants.js"></script>
+  <script src="src/utils/dom-utils.js"></script>
+  <script src="src/utils/error-handler.js"></script>
+  <script src="src/services/phonetic-service.js"></script>
+  <script src="src/services/speech-service.js"></script>
+  <script src="src/services/storage-service.js"></script>
+  <script src="src/services/clipboard-service.js"></script>
+  <script src="src/services/translation/base-translator.js"></script>
+  <script src="src/services/translation/google-translator.js"></script>
+  <script src="src/services/translation/gemini-translator.js"></script>
+  <script src="src/services/translation/openai-translator.js"></script>
+  <script src="src/services/translation/mymemory-translator.js"></script>
+  <script src="src/services/translation/translation-factory.js"></script>
+  <script src="src/controllers/translation-controller.js"></script>
+  <script src="src/ui/popup/popup-ui.js"></script>
+  <script src="popup.js"></script>
+</body>
+
+</html>
