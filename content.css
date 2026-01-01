@@ -393,7 +393,7 @@
 }
 
 .inline-phonetic-toggle:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(130, 163, 255, 0.2);
   transform: scale(1.1);
 }
 
