@@ -185,7 +185,30 @@ class TranslatePopup extends BaseComponent {
         if (sourcePhonetic) {
             if (result.srcPhonetic) {
                 sourcePhonetic.style.display = 'flex';
-                sourcePhonetic.innerHTML = `<span class="inline-phonetic-text">/${DOMUtils.escapeHtml(result.srcPhonetic)}/</span>`;
+                sourcePhonetic.innerHTML = '';
+
+                const phoneticText = document.createElement('span');
+                phoneticText.className = 'inline-phonetic-text';
+                phoneticText.textContent = `/${result.srcPhonetic}/`;
+                sourcePhonetic.appendChild(phoneticText);
+
+                // Toggle button
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = 'inline-phonetic-toggle';
+                toggleBtn.textContent = '▲';
+                toggleBtn.title = 'Collapse phonetic';
+                toggleBtn.addEventListener('click', () => {
+                    if (sourcePhonetic.classList.contains('collapsed')) {
+                        sourcePhonetic.classList.remove('collapsed');
+                        toggleBtn.textContent = '▲';
+                        toggleBtn.title = 'Collapse phonetic';
+                    } else {
+                        sourcePhonetic.classList.add('collapsed');
+                        toggleBtn.textContent = '▼';
+                        toggleBtn.title = 'Expand phonetic';
+                    }
+                });
+                sourcePhonetic.appendChild(toggleBtn);
             } else {
                 sourcePhonetic.style.display = 'none';
                 sourcePhonetic.innerHTML = '';

@@ -29,6 +29,15 @@ class PopupUI {
         this.speakSource = document.getElementById('speakSource');
         this.speakTarget = document.getElementById('speakTarget');
 
+        // Clear button
+        this.clearBtn = document.getElementById('clearBtn');
+
+        // Phonetic toggle buttons and containers
+        this.toggleSourcePhonetic = document.getElementById('toggleSourcePhonetic');
+        this.toggleTargetPhonetic = document.getElementById('toggleTargetPhonetic');
+        this.sourcePhoneticContainer = document.getElementById('sourcePhoneticContainer');
+        this.targetPhoneticContainer = document.getElementById('targetPhoneticContainer');
+
         // Selectors
         this.sourceLang = document.getElementById('sourceLang');
         this.targetLang = document.getElementById('targetLang');
@@ -55,6 +64,69 @@ class PopupUI {
     init() {
         this.bindEvents();
         this.loadSettingsToUI();
+        this.getSelectedTextFromPage();
+    }
+
+    /**
+     * Get selected text from the active tab and auto-translate
+     */
+    async getSelectedTextFromPage() {
+        try {
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            if (!tab || !tab.id) {
+                await this.restoreLastTranslation();
+                return;
+            }
+
+            const results = await chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                func: () => window.getSelection().toString().trim()
+            });
+
+            if (results && results[0] && results[0].result) {
+                const selectedText = results[0].result;
+                this.inputText.value = selectedText;
+                this.doTranslate();
+            } else {
+                // No selected text, restore last translation
+                await this.restoreLastTranslation();
+            }
+        } catch (error) {
+            // Ignore errors (e.g., chrome:// pages, permissions)
+            console.log('Could not get selected text:', error.message);
+            await this.restoreLastTranslation();
+        }
+    }
+
+    /**
+     * Restore last translation from storage
+     */
+    async restoreLastTranslation() {
+        try {
+            const data = await chrome.storage.local.get(['lastInput', 'lastResult']);
+            if (data.lastInput) {
+                this.inputText.value = data.lastInput;
+            }
+            if (data.lastResult) {
+                this.displayResult(data.lastResult);
+            }
+        } catch (error) {
+            console.log('Could not restore last translation:', error.message);
+        }
+    }
+
+    /**
+     * Save last translation to storage
+     */
+    async saveLastTranslation(inputText, result) {
+        try {
+            await chrome.storage.local.set({
+                lastInput: inputText,
+                lastResult: result
+            });
+        } catch (error) {
+            console.log('Could not save translation:', error.message);
+        }
     }
 
     bindEvents() {
@@ -148,6 +220,59 @@ class PopupUI {
         this.copyTarget.addEventListener('click', () => this.handleCopy(this.translatedText.textContent, this.copyTarget));
         this.copyPhonetic.addEventListener('click', () => this.handleCopy(this.phoneticText.textContent, this.copyPhonetic));
         this.copySourcePhonetic.addEventListener('click', () => this.handleCopy(this.sourcePhonetic.textContent, this.copySourcePhonetic));
+
+        // Clear button
+        this.clearBtn.addEventListener('click', () => this.clearTranslation());
+
+        // Phonetic toggle buttons
+        this.toggleSourcePhonetic.addEventListener('click', () => this.togglePhonetic('source'));
+        this.toggleTargetPhonetic.addEventListener('click', () => this.togglePhonetic('target'));
+    }
+
+    /**
+     * Toggle phonetic section collapse/expand
+     * @param {string} type - 'source' or 'target'
+     */
+    togglePhonetic(type) {
+        const container = type === 'source' ? this.sourcePhoneticContainer : this.targetPhoneticContainer;
+        const btn = type === 'source' ? this.toggleSourcePhonetic : this.toggleTargetPhonetic;
+
+        if (container.classList.contains('collapsed')) {
+            container.classList.remove('collapsed');
+            btn.textContent = '▲';
+            btn.title = 'Collapse phonetic';
+        } else {
+            container.classList.add('collapsed');
+            btn.textContent = '▼';
+            btn.title = 'Expand phonetic';
+        }
+    }
+
+    /**
+     * Clear current translation and storage
+     */
+    async clearTranslation() {
+        this.inputText.value = '';
+        this.translatedText.textContent = '';
+        this.phoneticText.textContent = '';
+        this.sourcePhonetic.textContent = '';
+        this.resultArea.classList.add('hidden');
+        this.errorMessage.classList.add('hidden');
+
+        // Hide phonetic buttons
+        this.toggleVisibility(this.copyPhonetic, false);
+        this.toggleVisibility(this.copySourcePhonetic, false);
+        this.toggleVisibility(this.toggleTargetPhonetic, false);
+        this.toggleVisibility(this.toggleSourcePhonetic, false);
+
+        // Clear from storage
+        try {
+            await chrome.storage.local.remove(['lastInput', 'lastResult']);
+        } catch (error) {
+            console.log('Could not clear storage:', error.message);
+        }
+
+        this.inputText.focus();
     }
 
     loadSettingsToUI() {
@@ -212,6 +337,7 @@ class PopupUI {
             );
 
             this.displayResult(result);
+            this.saveLastTranslation(text, result);
         } catch (error) {
             this.displayError(error);
         } finally {
@@ -229,6 +355,10 @@ class PopupUI {
         // Toggle copy buttons
         this.toggleVisibility(this.copyPhonetic, !!result.targetPhonetic);
         this.toggleVisibility(this.copySourcePhonetic, !!result.srcPhonetic);
+
+        // Toggle toggle buttons
+        this.toggleVisibility(this.toggleTargetPhonetic, !!result.targetPhonetic);
+        this.toggleVisibility(this.toggleSourcePhonetic, !!result.srcPhonetic);
 
         // Fallback notice
         if (result.fallbackNotice) {

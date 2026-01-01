@@ -52,8 +52,30 @@ class TranslationResult extends BaseComponent {
         // Phonetics
         if (result.targetPhonetic) {
             const phonetic = DOMUtils.createElement('div', 'inline-phonetic');
+            phonetic.id = 'targetPhoneticContainer';
             phonetic.style.display = 'flex';
-            phonetic.innerHTML = `<span class="inline-phonetic-text">/${DOMUtils.escapeHtml(result.targetPhonetic)}/</span>`;
+
+            const phoneticText = DOMUtils.createElement('span', 'inline-phonetic-text');
+            phoneticText.textContent = `/${result.targetPhonetic}/`;
+            phonetic.appendChild(phoneticText);
+
+            // Toggle button
+            const toggleBtn = DOMUtils.createElement('button', 'inline-phonetic-toggle');
+            toggleBtn.textContent = '▲';
+            toggleBtn.title = 'Collapse phonetic';
+            this.addEventListener(toggleBtn, 'click', () => {
+                if (phonetic.classList.contains('collapsed')) {
+                    phonetic.classList.remove('collapsed');
+                    toggleBtn.textContent = '▲';
+                    toggleBtn.title = 'Collapse phonetic';
+                } else {
+                    phonetic.classList.add('collapsed');
+                    toggleBtn.textContent = '▼';
+                    toggleBtn.title = 'Expand phonetic';
+                }
+            });
+            phonetic.appendChild(toggleBtn);
+
             section.appendChild(phonetic);
         }
 

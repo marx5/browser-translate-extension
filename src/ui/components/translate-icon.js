@@ -14,14 +14,8 @@ class TranslateIcon extends BaseComponent {
         this.element = DOMUtils.createElement('button', 'translate-icon-btn');
         this.element.title = 'Translate';
 
-        const iconImg = document.createElement('img');
-        iconImg.src = chrome.runtime.getURL('images/icon16.png');
-        iconImg.alt = 'Translate';
-        iconImg.style.width = '16px';
-        iconImg.style.height = '16px';
-        iconImg.style.pointerEvents = 'none'; // Ensure clicks pass to button
-
-        this.element.appendChild(iconImg);
+        this.element.textContent = '🔍';
+        this.element.style.fontSize = '14px';
 
         this.addEventListener(this.element, 'click', (e) => {
             e.stopPropagation();

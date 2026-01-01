@@ -56,12 +56,16 @@
     <div id="translate-view" class="view-content active">
       <div class="input-area">
         <div class="text-header">
+          <button class="icon-btn" id="clearBtn" title="Clear">🗑️</button>
           <button class="speaker-btn" id="speakSource" title="Speak original text">🔊</button>
         </div>
         <textarea id="inputText" placeholder="Enter text or select text on page..."></textarea>
-        <div class="phonetic-container">
+        <div class="phonetic-container" id="sourcePhoneticContainer">
           <span class="phonetic" id="sourcePhonetic"></span>
-          <button class="phonetic-copy-btn hidden" id="copySourcePhonetic" title="Copy phonetic">📋</button>
+          <div class="phonetic-actions">
+            <button class="phonetic-copy-btn hidden" id="copySourcePhonetic" title="Copy phonetic">📋</button>
+            <button class="phonetic-toggle-btn hidden" id="toggleSourcePhonetic" title="Toggle phonetic">▲</button>
+          </div>
         </div>
       </div>
 
@@ -77,9 +81,12 @@
             </div>
           </div>
           <div class="result-text" id="translatedText"></div>
-          <div class="phonetic-container">
+          <div class="phonetic-container" id="targetPhoneticContainer">
             <span class="phonetic" id="phoneticText"></span>
-            <button class="phonetic-copy-btn hidden" id="copyPhonetic" title="Copy phonetic">📋</button>
+            <div class="phonetic-actions">
+              <button class="phonetic-copy-btn hidden" id="copyPhonetic" title="Copy phonetic">📋</button>
+              <button class="phonetic-toggle-btn hidden" id="toggleTargetPhonetic" title="Toggle phonetic">▲</button>
+            </div>
           </div>
         </div>
       </div>
