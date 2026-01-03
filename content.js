@@ -15,7 +15,6 @@
 
             // Construct config from settings
             const config = {
-                GEMINI_API_KEY: settings.geminiApiKey || '',
                 OPENAI_API_KEY: settings.openaiApiKey || ''
             };
 
@@ -48,7 +47,6 @@
 
                     // Update Controller config (API Keys)
                     const newConfig = {};
-                    if (changes.geminiApiKey) newConfig.GEMINI_API_KEY = changes.geminiApiKey.newValue;
                     if (changes.openaiApiKey) newConfig.OPENAI_API_KEY = changes.openaiApiKey.newValue;
 
                     if (Object.keys(newConfig).length > 0) {

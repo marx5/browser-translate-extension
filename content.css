@@ -48,7 +48,7 @@
   opacity: 0;
   transform: translateY(10px);
   animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  font-family: 'Noto Sans', 'Inter', 'Roboto', 'Segoe UI', 'Arial', system-ui, sans-serif;
+  font-family: 'Noto Sans', sans-serif;
   overflow: hidden;
   display: flex;
   flex-direction: column;

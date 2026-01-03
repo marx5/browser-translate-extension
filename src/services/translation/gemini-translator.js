@@ -1,20 +1,19 @@
 /**
- * Gemini AI translation implementation
- * Requires API key from Google AI Studio
+ * Gemini AI translation implementation (via API Proxy)
+ * Uses Antigravity Tools API Proxy at localhost:8045 (no auth required)
  */
 class GeminiTranslator extends BaseTranslator {
     /**
      * @param {PhoneticService} phoneticService
-     * @param {string} apiKey
      */
-    constructor(phoneticService, apiKey) {
+    constructor(phoneticService) {
         super(phoneticService);
-        this.apiKey = apiKey;
-        this.apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent';
+        this.apiUrl = 'http://localhost:8045/v1/chat/completions';
+        this.model = 'gemini-2.5-flash-lite';
     }
 
     /**
-     * Translate using Gemini AI
+     * Translate using Gemini AI via API Proxy
      * @param {string} text
      * @param {string} sourceLang
      * @param {string} targetLang
@@ -28,35 +27,84 @@ class GeminiTranslator extends BaseTranslator {
         const prompt = this.buildPrompt(text, sourceLangName, targetLangName);
 
         try {
-            const response = await fetch(this.apiUrl, {
+            // Use background script to bypass CORS for localhost
+            const proxyResponse = await this.proxyFetch(this.apiUrl, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-goog-api-key': this.apiKey
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    contents: [{
-                        parts: [{ text: prompt }]
+                    model: this.model,
+                    messages: [{
+                        role: 'user',
+                        content: prompt
                     }]
                 })
             });
 
-            if (!response.ok) {
-                throw await this.handleApiError(response);
+            if (proxyResponse.error) {
+                throw await this.handleProxyError(proxyResponse);
             }
 
-            const data = await response.json();
-            const result = this.parseResponse(data, sourceLang);
+            const result = this.parseResponse(proxyResponse.data, sourceLang);
 
             return this.enrichWithPhonetics(result, text, sourceLang, targetLang);
         } catch (error) {
-            // Re-throw API key errors
             if (this.isApiKeyError(error)) {
                 throw error;
             }
-            // For other errors, throw with context
             throw new Error(`Gemini AI error: ${error.message}`);
         }
+    }
+
+    /**
+     * Proxy fetch through background script to bypass CORS
+     * @private
+     */
+    proxyFetch(url, options) {
+        return new Promise((resolve) => {
+            chrome.runtime.sendMessage(
+                { action: 'proxyFetch', url, options },
+                (response) => {
+                    if (chrome.runtime.lastError) {
+                        resolve({ error: true, message: chrome.runtime.lastError.message });
+                    } else {
+                        resolve(response);
+                    }
+                }
+            );
+        });
+    }
+
+    /**
+     * Handle proxy error response
+     * @private
+     */
+    handleProxyError(proxyResponse) {
+        if (proxyResponse.message) {
+            return new Error(proxyResponse.message);
+        }
+        
+        const status = proxyResponse.status;
+        const errorData = proxyResponse.data || {};
+        const errorMessage = errorData.error?.message || '';
+
+        if (status === 400) {
+            if (errorMessage.includes('API key not valid') || errorMessage.includes('API_KEY_INVALID')) {
+                return new Error('Gemini API key không hợp lệ. Vui lòng kiểm tra lại key trong Tab Settings');
+            }
+            return new Error(`Gemini API lỗi: ${errorMessage || 'Yêu cầu không hợp lệ'}`);
+        } else if (status === 429) {
+            return new Error('Gemini API: Đã vượt quá giới hạn số lượt gọi. Vui lòng thử lại sau.');
+        } else if (status === 403) {
+            return new Error('Gemini API: Không có quyền truy cập. Vui lòng kiểm tra API key.');
+        } else if (status === 401) {
+            return new Error('Gemini API: API key không được xác thực. Vui lòng kiểm tra lại.');
+        } else if (status >= 500) {
+            return new Error('Gemini API: Lỗi máy chủ. Vui lòng thử lại sau.');
+        }
+
+        return new Error(`Gemini API lỗi (${status}): ${errorMessage}`);
     }
 
     /**
@@ -64,32 +112,49 @@ class GeminiTranslator extends BaseTranslator {
      * @private
      */
     buildPrompt(text, sourceLangName, targetLangName) {
-        return `You are a professional translator. Translate the following text from ${sourceLangName} to ${targetLangName}.
+        return `You are an expert translator with deep understanding of languages, cultures, and context. Your task is to translate from ${sourceLangName} to ${targetLangName}.
 
 Text to translate:
 """
 ${text}
 """
 
-Instructions:
-1. Translate ALL text content found within the triple quotes.
-2. Preserve existing line breaks and structure.
-3. Provide your response in this exact JSON format:
+SMART TRANSLATION RULES:
+1. AUTO-DETECT the type of content and translate accordingly:
+   - Single word/phrase: Provide the most common translation + brief meaning if helpful
+   - Sentence: Natural, fluent translation preserving tone and intent
+   - Paragraph/long text: Maintain flow, coherence, and original style
+   - Slang/informal: Use equivalent casual expressions in target language
+   - Technical terms: Keep accuracy, add brief explanation if ambiguous
+   - Idioms/proverbs: Translate meaning, not literal words
+
+2. PRESERVE the original:
+   - Tone (formal/informal/humorous/serious)
+   - Emotion and nuance
+   - Line breaks and formatting
+   - Names, brands, technical terms when appropriate
+
+3. PRIORITIZE:
+   - Natural-sounding translation over literal accuracy
+   - Cultural adaptation when needed
+   - Clarity and readability
+
+RESPONSE FORMAT (JSON only):
 {
-  "translation": "the translated text here, preserving line breaks",
-  "sourcePhonetic": "phonetic transcription of source text",
-  "targetPhonetic": "phonetic transcription of translated text"
+  "translation": "your translation here",
+  "sourcePhonetic": "IPA or romanization of source",
+  "targetPhonetic": "IPA or romanization of translation"
 }
 
-Only respond with the JSON.`;
+Only respond with the JSON, no explanation.`;
     }
 
     /**
-     * Parse Gemini response
+     * Parse API Proxy response (Gemini format wrapped in response object)
      * @private
      */
     parseResponse(data, sourceLang) {
-        let responseText = data.candidates[0]?.content?.parts[0]?.text || '';
+        let responseText = data.response?.candidates?.[0]?.content?.parts?.[0]?.text || '';
         responseText = responseText.trim();
 
         let translation = '';
@@ -97,48 +162,17 @@ Only respond with the JSON.`;
         let targetPhonetic = '';
 
         try {
-            // Remove markdown code blocks if present
             responseText = responseText.replace(/```json\s*|\s*```/g, '');
             const parsed = JSON.parse(responseText);
             translation = parsed.translation || '';
             srcPhonetic = parsed.sourcePhonetic || '';
             targetPhonetic = parsed.targetPhonetic || '';
         } catch (e) {
-            // If JSON parsing fails, use the whole response as translation
             translation = responseText;
         }
 
         const detectedLang = sourceLang === 'auto' ? 'en' : sourceLang;
         return { translation, srcPhonetic, targetPhonetic, detectedLang };
-    }
-
-    /**
-     * Handle API errors
-     * @private
-     */
-    async handleApiError(response) {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error?.message || '';
-
-        if (response.status === 400) {
-            if (errorMessage.includes('API key not valid') || errorMessage.includes('API_KEY_INVALID')) {
-                return new Error('❌ Gemini API key không hợp lệ. Vui lòng kiểm tra lại key trong Tab Settings');
-            }
-            return new Error(`❌ Gemini API lỗi: ${errorMessage || 'Yêu cầu không hợp lệ'}`);
-        } else if (response.status === 429) {
-            return new Error('⏱️ Gemini API: Đã vượt quá giới hạn số lượt gọi. Vui lòng thử lại sau hoặc chọn dịch vụ khác.');
-        } else if (response.status === 403) {
-            if (errorMessage.includes('quota') || errorMessage.includes('QUOTA_EXCEEDED')) {
-                return new Error('📊 Gemini API: Đã hết quota miễn phí. Vui lòng chọn dịch vụ khác hoặc nâng cấp tài khoản.');
-            }
-            return new Error('🔒 Gemini API: Không có quyền truy cập. Vui lòng kiểm tra API key trong Settings.');
-        } else if (response.status === 401) {
-            return new Error('🔑 Gemini API: API key không được xác thực. Vui lòng kiểm tra lại trong Settings.');
-        } else if (response.status >= 500) {
-            return new Error('🔧 Gemini API: Lỗi máy chủ. Vui lòng thử lại sau.');
-        }
-
-        return new Error(`❌ Gemini API lỗi (${response.status}): ${errorMessage || response.statusText}`);
     }
 
     /**

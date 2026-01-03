@@ -19,19 +19,13 @@ const TRANSLATION_SERVICES = {
     GEMINI: {
         id: 'gemini',
         name: 'Gemini AI',
-        requiresApiKey: true,
-        apiKeyName: 'GEMINI_API_KEY'
+        requiresApiKey: false
     },
     OPENAI: {
         id: 'openai',
         name: 'OpenAI',
         requiresApiKey: true,
         apiKeyName: 'OPENAI_API_KEY'
-    },
-    MYMEMORY: {
-        id: 'mymemory',
-        name: 'MyMemory',
-        requiresApiKey: false
     }
 };
 

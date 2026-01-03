@@ -8,7 +8,7 @@
 <a name="vi"></a>
 ## 🇻🇳 Tiếng Việt
 
-**Browser Translation Extension** là một tiện ích mở rộng mạnh mẽ giúp bạn dịch văn bản trực tiếp trên trang web hoặc qua popup. Hỗ trợ các dịch vụ hàng đầu như Google Translate, Gemini AI, OpenAI (ChatGPT) và MyMemory.
+**Browser Translation Extension** là một tiện ích mở rộng mạnh mẽ giúp bạn dịch văn bản trực tiếp trên trang web hoặc qua popup. Hỗ trợ các dịch vụ hàng đầu như Google Translate, Gemini AI và OpenAI (ChatGPT).
 
 ### ✨ Tính Năng Nổi Bật
 *   **Dịch Inline (Trong trang):**
@@ -21,7 +21,7 @@
 *   **Đa Dịch Vụ:**
     *   **Google Translate:** Miễn phí, tốc độ cao (Mặc định).
     *   **Gemini AI & OpenAI:** Dịch thông minh, hiểu ngữ cảnh (Cần nhập API Key).
-    *   **MyMemory:** Dịch vụ dịch thuật cộng đồng.
+
 *   **Tính Năng Khác:**
     *   **Phát Âm (TTS):** Nghe đọc văn bản gốc và bản dịch.
     *   **Phiên Âm (IPA):** Hiển thị phiên âm quốc tế cho Tiếng Anh.
@@ -45,7 +45,7 @@
 <a name="en"></a>
 ## 🇺🇸 English
 
-**Browser Translation Extension** is a powerful tool designed for seamless translation directly on webpages or via a popup interface. It supports top-tier services like Google Translate, Gemini AI, OpenAI (ChatGPT), and MyMemory.
+**Browser Translation Extension** is a powerful tool designed for seamless translation directly on webpages or via a popup interface. It supports top-tier services like Google Translate, Gemini AI, and OpenAI (ChatGPT).
 
 ### ✨ Key Features
 *   **Inline Translation:**
@@ -58,7 +58,7 @@
 *   **Multi-Service Support:**
     *   **Google Translate:** Free and fast (Default).
     *   **Gemini AI & OpenAI:** Context-aware AI translation (Requires API Key).
-    *   **MyMemory:** Collaborative translation archive.
+
 *   **Other Features:**
     *   **Text-to-Speech:** Listen to original and translated text.
     *   **Phonetics (IPA):** Displays IPA pronunciation for English.

@@ -18,7 +18,6 @@
           <option value="google">Google Translate</option>
           <option value="gemini">Gemini AI</option>
           <option value="openai">OpenAI</option>
-          <option value="mymemory">MyMemory</option>
         </select>
       </div>
       <button class="icon-btn settings-btn" id="openSettingsBtn" title="Settings">⚙️</button>
@@ -98,12 +97,6 @@
     <div id="settings-view" class="view-content hidden">
       <div class="settings-form">
         <div class="form-group">
-          <label for="geminiApiKey">Gemini API Key</label>
-          <input type="password" id="geminiApiKey" placeholder="Enter Gemini API Key">
-          <div class="helper-text">Required for Gemini translation</div>
-        </div>
-
-        <div class="form-group">
           <label for="openaiApiKey">OpenAI API Key</label>
           <input type="password" id="openaiApiKey" placeholder="Enter OpenAI API Key">
           <div class="helper-text">Required for OpenAI translation</div>
@@ -129,7 +122,6 @@
   <script src="src/services/translation/google-translator.js"></script>
   <script src="src/services/translation/gemini-translator.js"></script>
   <script src="src/services/translation/openai-translator.js"></script>
-  <script src="src/services/translation/mymemory-translator.js"></script>
   <script src="src/services/translation/translation-factory.js"></script>
   <script src="src/controllers/translation-controller.js"></script>
   <script src="src/ui/popup/popup-ui.js"></script>

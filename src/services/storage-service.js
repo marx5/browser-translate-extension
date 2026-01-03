@@ -9,12 +9,11 @@ class StorageService {
      */
     static async getSettings() {
         return new Promise((resolve) => {
-            chrome.storage.sync.get(['sourceLang', 'targetLang', 'translationService', 'geminiApiKey', 'openaiApiKey'], (result) => {
+            chrome.storage.sync.get(['sourceLang', 'targetLang', 'translationService', 'openaiApiKey'], (result) => {
                 resolve({
                     sourceLang: result.sourceLang || 'auto',
                     targetLang: result.targetLang || 'vi',
                     translationService: result.translationService || 'google',
-                    geminiApiKey: result.geminiApiKey || '',
                     openaiApiKey: result.openaiApiKey || ''
                 });
             });

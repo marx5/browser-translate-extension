@@ -7,7 +7,6 @@
     const settings = await StorageService.getSettings();
 
     const config = {
-      GEMINI_API_KEY: settings.geminiApiKey || '',
       OPENAI_API_KEY: settings.openaiApiKey || ''
     };
 

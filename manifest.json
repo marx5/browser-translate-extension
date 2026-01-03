@@ -42,7 +42,6 @@
         "src/services/translation/google-translator.js",
         "src/services/translation/gemini-translator.js",
         "src/services/translation/openai-translator.js",
-        "src/services/translation/mymemory-translator.js",
         "src/services/translation/translation-factory.js",
         "src/controllers/translation-controller.js",
         "src/ui/components/base-component.js",

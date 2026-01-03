@@ -71,24 +71,41 @@ class OpenAITranslator extends BaseTranslator {
      * @private
      */
     buildPrompt(text, sourceLangName, targetLangName) {
-        return `You are a professional translator. Translate the following text from ${sourceLangName} to ${targetLangName}.
+        return `You are an expert translator with deep understanding of languages, cultures, and context. Your task is to translate from ${sourceLangName} to ${targetLangName}.
 
 Text to translate:
 """
 ${text}
 """
 
-Instructions:
-1. Translate ALL text content found within the triple quotes.
-2. Preserve existing line breaks and structure.
-3. Provide your response in this exact JSON format:
+SMART TRANSLATION RULES:
+1. AUTO-DETECT the type of content and translate accordingly:
+   - Single word/phrase: Provide the most common translation + brief meaning if helpful
+   - Sentence: Natural, fluent translation preserving tone and intent
+   - Paragraph/long text: Maintain flow, coherence, and original style
+   - Slang/informal: Use equivalent casual expressions in target language
+   - Technical terms: Keep accuracy, add brief explanation if ambiguous
+   - Idioms/proverbs: Translate meaning, not literal words
+
+2. PRESERVE the original:
+   - Tone (formal/informal/humorous/serious)
+   - Emotion and nuance
+   - Line breaks and formatting
+   - Names, brands, technical terms when appropriate
+
+3. PRIORITIZE:
+   - Natural-sounding translation over literal accuracy
+   - Cultural adaptation when needed
+   - Clarity and readability
+
+RESPONSE FORMAT (JSON only):
 {
-  "translation": "the translated text here, preserving line breaks",
-  "sourcePhonetic": "phonetic transcription of source text",
-  "targetPhonetic": "phonetic transcription of translated text"
+  "translation": "your translation here",
+  "sourcePhonetic": "IPA or romanization of source",
+  "targetPhonetic": "IPA or romanization of translation"
 }
 
-Only respond with the JSON.`;
+Only respond with the JSON, no explanation.`;
     }
 
     /**

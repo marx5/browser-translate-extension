@@ -53,7 +53,6 @@ class PopupUI {
         this.backToTranslateBtn = document.getElementById('backToTranslateBtn');
 
         // Settings elements
-        this.geminiApiKey = document.getElementById('geminiApiKey');
         this.openaiApiKey = document.getElementById('openaiApiKey');
         this.saveSettingsBtn = document.getElementById('saveSettingsBtn');
         this.saveStatus = document.getElementById('saveStatus');
@@ -281,24 +280,20 @@ class PopupUI {
         if (this.translationService) this.translationService.value = this.settings.translationService;
 
         // Load API Keys
-        if (this.geminiApiKey) this.geminiApiKey.value = this.settings.geminiApiKey || '';
         if (this.openaiApiKey) this.openaiApiKey.value = this.settings.openaiApiKey || '';
 
         // Update controller with loaded keys
         this.controller.updateConfig({
-            GEMINI_API_KEY: this.settings.geminiApiKey,
             OPENAI_API_KEY: this.settings.openaiApiKey
         });
     }
 
     async saveSettings() {
         const newSettings = {
-            geminiApiKey: this.geminiApiKey.value.trim(),
             openaiApiKey: this.openaiApiKey.value.trim()
         };
 
         // Update local settings object
-        this.settings.geminiApiKey = newSettings.geminiApiKey;
         this.settings.openaiApiKey = newSettings.openaiApiKey;
 
         // Save to storage
@@ -306,7 +301,6 @@ class PopupUI {
 
         // Update Controller
         this.controller.updateConfig({
-            GEMINI_API_KEY: newSettings.geminiApiKey,
             OPENAI_API_KEY: newSettings.openaiApiKey
         });
 

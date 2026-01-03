@@ -42,19 +42,13 @@ class TranslationFactory {
                 return new GoogleTranslator(this.phoneticService);
 
             case 'gemini':
-                return new GeminiTranslator(
-                    this.phoneticService,
-                    this.config.GEMINI_API_KEY
-                );
+                return new GeminiTranslator(this.phoneticService);
 
             case 'openai':
                 return new OpenAITranslator(
                     this.phoneticService,
                     this.config.OPENAI_API_KEY
                 );
-
-            case 'mymemory':
-                return new MyMemoryTranslator(this.phoneticService);
 
             default:
                 console.warn(`Unknown service: ${serviceId}, falling back to Google`);
