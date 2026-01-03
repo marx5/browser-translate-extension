@@ -20,6 +20,7 @@
           <option value="openai">OpenAI</option>
         </select>
       </div>
+      <button class="icon-btn history-btn" id="openHistoryBtn" title="History">📜</button>
       <button class="icon-btn settings-btn" id="openSettingsBtn" title="Settings">⚙️</button>
     </div>
     <div class="language-selector">
@@ -102,8 +103,25 @@
           <div class="helper-text">Required for OpenAI translation</div>
         </div>
 
+        <div class="form-group">
+          <label for="geminiProxyUrl">Gemini Proxy URL</label>
+          <input type="text" id="geminiProxyUrl" placeholder="http://localhost:8045/v1/chat/completions">
+          <div class="helper-text">API Proxy endpoint for Gemini AI</div>
+        </div>
+
         <button id="saveSettingsBtn">Save Settings</button>
         <div id="saveStatus" class="save-status hidden">Settings saved!</div>
+      </div>
+    </div>
+
+    <!-- History View -->
+    <div id="history-view" class="view-content hidden">
+      <div class="history-header">
+        <h4>Translation History</h4>
+        <button class="clear-history-btn" id="clearHistoryBtn">Clear All</button>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="history-empty">No history yet</div>
       </div>
     </div>
   </div>

@@ -42,7 +42,10 @@ class TranslationFactory {
                 return new GoogleTranslator(this.phoneticService);
 
             case 'gemini':
-                return new GeminiTranslator(this.phoneticService);
+                return new GeminiTranslator(
+                    this.phoneticService,
+                    this.config.GEMINI_PROXY_URL
+                );
 
             case 'openai':
                 return new OpenAITranslator(

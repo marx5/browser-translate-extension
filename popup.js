@@ -7,7 +7,8 @@
     const settings = await StorageService.getSettings();
 
     const config = {
-      OPENAI_API_KEY: settings.openaiApiKey || ''
+      OPENAI_API_KEY: settings.openaiApiKey || '',
+      GEMINI_PROXY_URL: settings.geminiProxyUrl || 'http://localhost:8045/v1/chat/completions'
     };
 
     // Initialize controller

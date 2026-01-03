@@ -54,8 +54,15 @@ class PopupUI {
 
         // Settings elements
         this.openaiApiKey = document.getElementById('openaiApiKey');
+        this.geminiProxyUrl = document.getElementById('geminiProxyUrl');
         this.saveSettingsBtn = document.getElementById('saveSettingsBtn');
         this.saveStatus = document.getElementById('saveStatus');
+
+        // History elements
+        this.historyView = document.getElementById('history-view');
+        this.openHistoryBtn = document.getElementById('openHistoryBtn');
+        this.historyList = document.getElementById('historyList');
+        this.clearHistoryBtn = document.getElementById('clearHistoryBtn');
 
         this.init();
     }
@@ -181,6 +188,7 @@ class PopupUI {
         this.backToTranslateBtn.addEventListener('click', () => {
             this.settingsView.classList.add('hidden');
             this.settingsView.classList.remove('active');
+            this.historyView.classList.add('hidden');
 
             this.translateView.classList.remove('hidden');
             this.translateView.classList.add('active');
@@ -189,6 +197,33 @@ class PopupUI {
             // Revert button to Settings
             this.openSettingsBtn.textContent = '⚙️';
             this.openSettingsBtn.title = 'Settings';
+        });
+
+        // History toggle
+        this.openHistoryBtn.addEventListener('click', () => {
+            const isHistoryActive = !this.historyView.classList.contains('hidden');
+
+            if (isHistoryActive) {
+                // Close history (back to translate)
+                this.historyView.classList.add('hidden');
+                this.translateView.classList.remove('hidden');
+                document.body.classList.remove('settings-mode');
+            } else {
+                // Open history
+                this.translateView.classList.add('hidden');
+                this.settingsView.classList.add('hidden');
+                this.historyView.classList.remove('hidden');
+                document.body.classList.add('settings-mode');
+                this.loadHistory();
+            }
+        });
+
+        // Clear history
+        this.clearHistoryBtn.addEventListener('click', async () => {
+            if (confirm('Clear all translation history?')) {
+                await StorageService.clearHistory();
+                this.loadHistory();
+            }
         });
 
         // Save Settings
@@ -294,29 +329,34 @@ class PopupUI {
         if (this.targetLang) this.targetLang.value = this.settings.targetLang;
         if (this.translationService) this.translationService.value = this.settings.translationService;
 
-        // Load API Keys
+        // Load API Keys and Proxy URL
         if (this.openaiApiKey) this.openaiApiKey.value = this.settings.openaiApiKey || '';
+        if (this.geminiProxyUrl) this.geminiProxyUrl.value = this.settings.geminiProxyUrl || '';
 
-        // Update controller with loaded keys
+        // Update controller with loaded config
         this.controller.updateConfig({
-            OPENAI_API_KEY: this.settings.openaiApiKey
+            OPENAI_API_KEY: this.settings.openaiApiKey,
+            GEMINI_PROXY_URL: this.settings.geminiProxyUrl
         });
     }
 
     async saveSettings() {
         const newSettings = {
-            openaiApiKey: this.openaiApiKey.value.trim()
+            openaiApiKey: this.openaiApiKey.value.trim(),
+            geminiProxyUrl: this.geminiProxyUrl.value.trim() || 'http://localhost:8045/v1/chat/completions'
         };
 
         // Update local settings object
         this.settings.openaiApiKey = newSettings.openaiApiKey;
+        this.settings.geminiProxyUrl = newSettings.geminiProxyUrl;
 
         // Save to storage
         await StorageService.saveSettings(this.settings);
 
         // Update Controller
         this.controller.updateConfig({
-            OPENAI_API_KEY: newSettings.openaiApiKey
+            OPENAI_API_KEY: newSettings.openaiApiKey,
+            GEMINI_PROXY_URL: newSettings.geminiProxyUrl
         });
 
         // Show feedback
@@ -347,6 +387,15 @@ class PopupUI {
 
             this.displayResult(result);
             this.saveLastTranslation(text, result);
+            
+            // Save to history
+            await StorageService.addToHistory({
+                source: text,
+                translation: result.translation,
+                sourceLang: this.sourceLang.value,
+                targetLang: this.targetLang.value,
+                service: this.translationService.value
+            });
         } catch (error) {
             this.displayError(error);
         } finally {
@@ -420,5 +469,90 @@ class PopupUI {
         } else {
             element.classList.add('hidden');
         }
+    }
+
+    /**
+     * Load and display translation history
+     */
+    async loadHistory() {
+        const history = await StorageService.getHistory();
+        
+        if (history.length === 0) {
+            this.historyList.innerHTML = '<div class="history-empty">No history yet</div>';
+            return;
+        }
+        
+        this.historyList.innerHTML = history.map(item => this.renderHistoryItem(item)).join('');
+        
+        // Bind click events
+        this.historyList.querySelectorAll('.history-item').forEach(el => {
+            el.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('history-delete')) {
+                    this.handleHistoryClick(el.dataset.id, history);
+                }
+            });
+        });
+        
+        // Bind delete events
+        this.historyList.querySelectorAll('.history-delete').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                await StorageService.deleteHistoryItem(btn.dataset.id);
+                this.loadHistory();
+            });
+        });
+    }
+
+    /**
+     * Render a single history item
+     */
+    renderHistoryItem(item) {
+        const date = new Date(item.timestamp);
+        const timeStr = date.toLocaleString('vi-VN', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            day: '2-digit',
+            month: '2-digit'
+        });
+        
+        return `
+            <div class="history-item" data-id="${item.id}">
+                <button class="history-delete" data-id="${item.id}" title="Delete">×</button>
+                <div class="history-source">${this.escapeHtml(item.source)}</div>
+                <div class="history-translation">${this.escapeHtml(item.translation)}</div>
+                <div class="history-meta">
+                    <span>${item.sourceLang} → ${item.targetLang}</span>
+                    <span>${timeStr}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Handle click on history item (load and translate)
+     */
+    handleHistoryClick(id, history) {
+        const item = history.find(h => h.id === id);
+        if (!item) return;
+        
+        // Switch to translate view
+        this.historyView.classList.add('hidden');
+        this.translateView.classList.remove('hidden');
+        document.body.classList.remove('settings-mode');
+        
+        // Load text and translate
+        this.inputText.value = item.source;
+        this.sourceLang.value = item.sourceLang;
+        this.targetLang.value = item.targetLang;
+        this.doTranslate();
+    }
+
+    /**
+     * Escape HTML to prevent XSS
+     */
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 }

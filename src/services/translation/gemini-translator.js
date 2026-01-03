@@ -1,14 +1,15 @@
 /**
  * Gemini AI translation implementation (via API Proxy)
- * Uses Antigravity Tools API Proxy at localhost:8045 (no auth required)
+ * Uses configurable API Proxy URL (default: localhost:8045)
  */
 class GeminiTranslator extends BaseTranslator {
     /**
      * @param {PhoneticService} phoneticService
+     * @param {string} apiUrl - API Proxy URL
      */
-    constructor(phoneticService) {
+    constructor(phoneticService, apiUrl) {
         super(phoneticService);
-        this.apiUrl = 'http://localhost:8045/v1/chat/completions';
+        this.apiUrl = apiUrl || 'http://localhost:8045/v1/chat/completions';
         this.model = 'gemini-2.5-flash-lite';
     }
 

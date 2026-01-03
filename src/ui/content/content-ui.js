@@ -187,6 +187,15 @@ class ContentUI {
                 this.currentPopup.displayResult(result);
                 // Reposition after content update (crucial for size changes)
                 this.repositionPopup();
+                
+                // Save to history
+                await StorageService.addToHistory({
+                    source: text,
+                    translation: result.translation,
+                    sourceLang: this.settings.sourceLang,
+                    targetLang: this.settings.targetLang,
+                    service: this.settings.translationService
+                });
             }
         } catch (error) {
             if (this.currentPopup) {
