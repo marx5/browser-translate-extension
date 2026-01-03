@@ -125,8 +125,9 @@ Only respond with the JSON, no explanation.`;
             responseText = responseText.replace(/```json\s*|\s*```/g, '');
             const parsed = JSON.parse(responseText);
             translation = parsed.translation || '';
-            srcPhonetic = parsed.sourcePhonetic || '';
-            targetPhonetic = parsed.targetPhonetic || '';
+            // Normalize Unicode to fix combining diacritics (pinyin tones)
+            srcPhonetic = (parsed.sourcePhonetic || '').normalize('NFC');
+            targetPhonetic = (parsed.targetPhonetic || '').normalize('NFC');
         } catch (e) {
             // If JSON parsing fails, use the whole response as translation
             translation = responseText;

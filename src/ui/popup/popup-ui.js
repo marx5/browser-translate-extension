@@ -79,7 +79,22 @@ class PopupUI {
 
             const results = await chrome.scripting.executeScript({
                 target: { tabId: tab.id },
-                func: () => window.getSelection().toString().trim()
+                func: () => {
+                    const selection = window.getSelection();
+                    if (!selection.rangeCount) return '';
+                    
+                    const range = selection.getRangeAt(0);
+                    const fragment = range.cloneContents();
+                    const temp = document.createElement('div');
+                    temp.appendChild(fragment);
+                    
+                    // Replace img with alt text (emoji support)
+                    temp.querySelectorAll('img[alt]').forEach(img => {
+                        img.replaceWith(img.alt);
+                    });
+                    
+                    return temp.textContent.trim();
+                }
             });
 
             if (results && results[0] && results[0].result) {

@@ -60,15 +60,38 @@
         }
     }
 
+    /**
+     * Get selection text including img alt attributes (for emoji support)
+     * @param {Selection} selection
+     * @returns {string}
+     */
+    function getSelectionWithAlt(selection) {
+        if (!selection.rangeCount) return '';
+
+        const range = selection.getRangeAt(0);
+        const fragment = range.cloneContents();
+        
+        // Create a temporary container
+        const temp = document.createElement('div');
+        temp.appendChild(fragment);
+
+        // Replace img elements with their alt text
+        const images = temp.querySelectorAll('img[alt]');
+        images.forEach(img => {
+            const altText = document.createTextNode(img.alt);
+            img.parentNode.replaceChild(altText, img);
+        });
+
+        return temp.textContent.trim();
+    }
+
     function handleTextSelection(e) {
-        // Capture coordinates immediately
         const x = e.pageX || (e.clientX + window.scrollX);
         const y = e.pageY || (e.clientY + window.scrollY);
 
-        // Debounce slightly to ensure selection is complete
         setTimeout(() => {
             const selection = window.getSelection();
-            const text = selection.toString().trim();
+            const text = getSelectionWithAlt(selection);
             contentUI.handleSelection(x, y, text);
         }, 10);
     }
