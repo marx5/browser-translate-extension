@@ -16,7 +16,8 @@
             // Construct config from settings
             const config = {
                 OPENAI_API_KEY: settings.openaiApiKey || '',
-                GEMINI_PROXY_URL: settings.geminiProxyUrl || 'http://localhost:8045/v1/chat/completions'
+                GEMINI_PROXY_URL: settings.geminiProxyUrl || 'http://localhost:8045/v1/chat/completions',
+                GEMINI_API_KEY: settings.geminiApiKey || 'sk-469742fe794d40778bbaabe9f2ed61fb'
             };
 
             // Initialize services and controller
@@ -49,6 +50,8 @@
                     // Update Controller config (API Keys)
                     const newConfig = {};
                     if (changes.openaiApiKey) newConfig.OPENAI_API_KEY = changes.openaiApiKey.newValue;
+                    if (changes.geminiApiKey) newConfig.GEMINI_API_KEY = changes.geminiApiKey.newValue;
+                    if (changes.geminiProxyUrl) newConfig.GEMINI_PROXY_URL = changes.geminiProxyUrl.newValue;
 
                     if (Object.keys(newConfig).length > 0) {
                         translationController.updateConfig(newConfig);

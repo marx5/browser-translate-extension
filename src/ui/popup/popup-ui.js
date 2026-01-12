@@ -55,6 +55,7 @@ class PopupUI {
         // Settings elements
         this.openaiApiKey = document.getElementById('openaiApiKey');
         this.geminiProxyUrl = document.getElementById('geminiProxyUrl');
+        this.geminiApiKey = document.getElementById('geminiApiKey');
         this.saveSettingsBtn = document.getElementById('saveSettingsBtn');
         this.saveStatus = document.getElementById('saveStatus');
 
@@ -332,23 +333,27 @@ class PopupUI {
         // Load API Keys and Proxy URL
         if (this.openaiApiKey) this.openaiApiKey.value = this.settings.openaiApiKey || '';
         if (this.geminiProxyUrl) this.geminiProxyUrl.value = this.settings.geminiProxyUrl || '';
+        if (this.geminiApiKey) this.geminiApiKey.value = this.settings.geminiApiKey || '';
 
         // Update controller with loaded config
         this.controller.updateConfig({
             OPENAI_API_KEY: this.settings.openaiApiKey,
-            GEMINI_PROXY_URL: this.settings.geminiProxyUrl
+            GEMINI_PROXY_URL: this.settings.geminiProxyUrl,
+            GEMINI_API_KEY: this.settings.geminiApiKey
         });
     }
 
     async saveSettings() {
         const newSettings = {
             openaiApiKey: this.openaiApiKey.value.trim(),
-            geminiProxyUrl: this.geminiProxyUrl.value.trim() || 'http://localhost:8045/v1/chat/completions'
+            geminiProxyUrl: this.geminiProxyUrl.value.trim() || 'http://localhost:8045/v1/chat/completions',
+            geminiApiKey: this.geminiApiKey ? this.geminiApiKey.value.trim() : ''
         };
 
         // Update local settings object
         this.settings.openaiApiKey = newSettings.openaiApiKey;
         this.settings.geminiProxyUrl = newSettings.geminiProxyUrl;
+        this.settings.geminiApiKey = newSettings.geminiApiKey;
 
         // Save to storage
         await StorageService.saveSettings(this.settings);
@@ -356,7 +361,8 @@ class PopupUI {
         // Update Controller
         this.controller.updateConfig({
             OPENAI_API_KEY: newSettings.openaiApiKey,
-            GEMINI_PROXY_URL: newSettings.geminiProxyUrl
+            GEMINI_PROXY_URL: newSettings.geminiProxyUrl,
+            GEMINI_API_KEY: newSettings.geminiApiKey
         });
 
         // Show feedback

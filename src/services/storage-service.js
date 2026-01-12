@@ -9,13 +9,14 @@ class StorageService {
      */
     static async getSettings() {
         return new Promise((resolve) => {
-            chrome.storage.sync.get(['sourceLang', 'targetLang', 'translationService', 'openaiApiKey', 'geminiProxyUrl'], (result) => {
+            chrome.storage.sync.get(['sourceLang', 'targetLang', 'translationService', 'openaiApiKey', 'geminiProxyUrl', 'geminiApiKey'], (result) => {
                 resolve({
                     sourceLang: result.sourceLang || 'auto',
                     targetLang: result.targetLang || 'vi',
                     translationService: result.translationService || 'google',
                     openaiApiKey: result.openaiApiKey || '',
-                    geminiProxyUrl: result.geminiProxyUrl || 'http://localhost:8045/v1/chat/completions'
+                    geminiProxyUrl: result.geminiProxyUrl || 'http://localhost:8045/v1/chat/completions',
+                    geminiApiKey: result.geminiApiKey || 'sk-469742fe794d40778bbaabe9f2ed61fb'
                 });
             });
         });

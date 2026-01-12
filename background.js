@@ -16,7 +16,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         (async () => {
             try {
                 const response = await fetch(request.url, request.options);
-                const data = await response.json();
+                
+                // Try to parse as JSON, fallback to text if fails
+                let data;
+                const contentType = response.headers.get('content-type');
+                const responseText = await response.text();
+                
+                try {
+                    data = JSON.parse(responseText);
+                } catch (e) {
+                    // Not JSON, wrap text in error object
+                    data = { error: { message: responseText, type: 'non_json_response' } };
+                }
                 
                 if (!response.ok) {
                     sendResponse({ 

@@ -1,149 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Translator</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Translator</title>
-  <link rel="stylesheet" href="popup.css">
-</head>
-
-<body>
-  <div class="header">
-    <div class="top-row">
-      <button class="icon-btn back-btn hidden" id="backToTranslateBtn" title="Back">⬅️</button>
-      <h3 class="settings-title hidden" id="settingsTitle">Settings</h3>
-      <div class="service-selector">
-        <select id="translationService">
-          <option value="google">Google Translate</option>
-          <option value="gemini">Gemini AI</option>
-          <option value="openai">OpenAI</option>
+  <body>
+    <div class="header">
+      <div class="top-row">
+        <button
+          class="icon-btn back-btn hidden"
+          id="backToTranslateBtn"
+          title="Back"
+        >
+          ⬅️
+        </button>
+        <h3 class="settings-title hidden" id="settingsTitle">Settings</h3>
+        <div class="service-selector">
+          <select id="translationService">
+            <option value="google">Google Translate</option>
+            <option value="gemini">Gemini AI</option>
+            <option value="openai">OpenAI</option>
+          </select>
+        </div>
+        <button
+          class="icon-btn history-btn"
+          id="openHistoryBtn"
+          title="History"
+        >
+          📜
+        </button>
+        <button
+          class="icon-btn settings-btn"
+          id="openSettingsBtn"
+          title="Settings"
+        >
+          ⚙️
+        </button>
+      </div>
+      <div class="language-selector">
+        <select id="sourceLang">
+          <option value="auto">Auto Detect</option>
+          <option value="en">English</option>
+          <option value="vi">Vietnamese</option>
+          <option value="ja">Japanese</option>
+          <option value="ko">Korean</option>
+          <option value="zh-CN">Chinese</option>
+          <option value="fr">French</option>
+          <option value="es">Spanish</option>
+          <option value="de">German</option>
+          <option value="ru">Russian</option>
+        </select>
+        <button class="swap-btn" id="swapLangs" title="Swap languages">
+          ⇄
+        </button>
+        <select id="targetLang">
+          <option value="vi" selected>Vietnamese</option>
+          <option value="en">English</option>
+          <option value="ja">Japanese</option>
+          <option value="ko">Korean</option>
+          <option value="zh-CN">Chinese</option>
+          <option value="fr">French</option>
+          <option value="es">Spanish</option>
+          <option value="de">German</option>
+          <option value="ru">Russian</option>
         </select>
       </div>
-      <button class="icon-btn history-btn" id="openHistoryBtn" title="History">📜</button>
-      <button class="icon-btn settings-btn" id="openSettingsBtn" title="Settings">⚙️</button>
     </div>
-    <div class="language-selector">
-      <select id="sourceLang">
-        <option value="auto">Auto Detect</option>
-        <option value="en">English</option>
-        <option value="vi">Vietnamese</option>
-        <option value="ja">Japanese</option>
-        <option value="ko">Korean</option>
-        <option value="zh-CN">Chinese</option>
-        <option value="fr">French</option>
-        <option value="es">Spanish</option>
-        <option value="de">German</option>
-        <option value="ru">Russian</option>
-      </select>
-      <button class="swap-btn" id="swapLangs" title="Swap languages">⇄</button>
-      <select id="targetLang">
-        <option value="vi" selected>Vietnamese</option>
-        <option value="en">English</option>
-        <option value="ja">Japanese</option>
-        <option value="ko">Korean</option>
-        <option value="zh-CN">Chinese</option>
-        <option value="fr">French</option>
-        <option value="es">Spanish</option>
-        <option value="de">German</option>
-        <option value="ru">Russian</option>
-      </select>
-    </div>
-  </div>
 
-  <div class="content">
-    <!-- Translate View -->
-    <div id="translate-view" class="view-content active">
-      <div class="input-area">
-        <div class="text-header">
-          <button class="icon-btn" id="clearBtn" title="Clear">🗑️</button>
-          <button class="speaker-btn" id="speakSource" title="Speak original text">🔊</button>
-        </div>
-        <textarea id="inputText" placeholder="Enter text or select text on page..."></textarea>
-        <div class="phonetic-container" id="sourcePhoneticContainer">
-          <span class="phonetic" id="sourcePhonetic"></span>
-          <div class="phonetic-actions">
-            <button class="phonetic-copy-btn hidden" id="copySourcePhonetic" title="Copy phonetic">📋</button>
-            <button class="phonetic-toggle-btn hidden" id="toggleSourcePhonetic" title="Toggle phonetic">▲</button>
+    <div class="content">
+      <!-- Translate View -->
+      <div id="translate-view" class="view-content active">
+        <div class="input-area">
+          <div class="text-header">
+            <button class="icon-btn" id="clearBtn" title="Clear">🗑️</button>
+            <button
+              class="speaker-btn"
+              id="speakSource"
+              title="Speak original text"
+            >
+              🔊
+            </button>
           </div>
-        </div>
-      </div>
-
-      <button id="translateBtn">Translate</button>
-
-      <div class="result-area hidden" id="resultArea">
-        <div class="result-card">
-          <div class="result-header">
-            <div class="result-label">Translation</div>
-            <div class="result-actions">
-              <button class="icon-btn" id="copyTarget" title="Copy translation">📋</button>
-              <button class="icon-btn" id="speakTarget" title="Speak translation">🔊</button>
-            </div>
-          </div>
-          <div class="result-text" id="translatedText"></div>
-          <div class="phonetic-container" id="targetPhoneticContainer">
-            <span class="phonetic" id="phoneticText"></span>
+          <textarea
+            id="inputText"
+            placeholder="Enter text or select text on page..."
+          ></textarea>
+          <div class="phonetic-container" id="sourcePhoneticContainer">
+            <span class="phonetic" id="sourcePhonetic"></span>
             <div class="phonetic-actions">
-              <button class="phonetic-copy-btn hidden" id="copyPhonetic" title="Copy phonetic">📋</button>
-              <button class="phonetic-toggle-btn hidden" id="toggleTargetPhonetic" title="Toggle phonetic">▲</button>
+              <button
+                class="phonetic-copy-btn hidden"
+                id="copySourcePhonetic"
+                title="Copy phonetic"
+              >
+                📋
+              </button>
+              <button
+                class="phonetic-toggle-btn hidden"
+                id="toggleSourcePhonetic"
+                title="Toggle phonetic"
+              >
+                ▲
+              </button>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="error-message hidden" id="errorMessage"></div>
-    </div>
+        <button id="translateBtn">Translate</button>
 
-    <!-- Settings View -->
-    <div id="settings-view" class="view-content hidden">
-      <div class="settings-form">
-        <div class="form-group">
-          <label for="openaiApiKey">OpenAI API Key</label>
-          <input type="password" id="openaiApiKey" placeholder="Enter OpenAI API Key">
-          <div class="helper-text">Required for OpenAI translation</div>
+        <div class="result-area hidden" id="resultArea">
+          <div class="result-card">
+            <div class="result-header">
+              <div class="result-label">Translation</div>
+              <div class="result-actions">
+                <button
+                  class="icon-btn"
+                  id="copyTarget"
+                  title="Copy translation"
+                >
+                  📋
+                </button>
+                <button
+                  class="icon-btn"
+                  id="speakTarget"
+                  title="Speak translation"
+                >
+                  🔊
+                </button>
+              </div>
+            </div>
+            <div class="result-text" id="translatedText"></div>
+            <div class="phonetic-container" id="targetPhoneticContainer">
+              <span class="phonetic" id="phoneticText"></span>
+              <div class="phonetic-actions">
+                <button
+                  class="phonetic-copy-btn hidden"
+                  id="copyPhonetic"
+                  title="Copy phonetic"
+                >
+                  📋
+                </button>
+                <button
+                  class="phonetic-toggle-btn hidden"
+                  id="toggleTargetPhonetic"
+                  title="Toggle phonetic"
+                >
+                  ▲
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="geminiProxyUrl">Gemini Proxy URL</label>
-          <input type="text" id="geminiProxyUrl" placeholder="http://localhost:8045/v1/chat/completions">
-          <div class="helper-text">API Proxy endpoint for Gemini AI</div>
+        <div class="error-message hidden" id="errorMessage"></div>
+      </div>
+
+      <!-- Settings View -->
+      <div id="settings-view" class="view-content hidden">
+        <div class="settings-form">
+          <div class="form-group">
+            <label for="openaiApiKey">OpenAI API Key</label>
+            <input
+              type="password"
+              id="openaiApiKey"
+              placeholder="Enter OpenAI API Key"
+            />
+            <div class="helper-text">Required for OpenAI translation</div>
+          </div>
+
+          <div class="form-group">
+            <label for="geminiProxyUrl">Gemini Proxy URL</label>
+            <input
+              type="text"
+              id="geminiProxyUrl"
+              placeholder="http://localhost:8045/v1/chat/completions"
+            />
+            <div class="helper-text">API Proxy endpoint for Gemini AI</div>
+          </div>
+
+          <div class="form-group">
+            <label for="geminiApiKey">Gemini API Key</label>
+            <input
+              type="password"
+              id="geminiApiKey"
+              placeholder="Enter Gemini API Key (Bearer token)"
+            />
+            <div class="helper-text">
+              Required for Gemini AI translation via proxy
+            </div>
+          </div>
+
+          <button id="saveSettingsBtn">Save Settings</button>
+          <div id="saveStatus" class="save-status hidden">Settings saved!</div>
         </div>
+      </div>
 
-        <button id="saveSettingsBtn">Save Settings</button>
-        <div id="saveStatus" class="save-status hidden">Settings saved!</div>
+      <!-- History View -->
+      <div id="history-view" class="view-content hidden">
+        <div class="history-header">
+          <h4>Translation History</h4>
+          <button class="clear-history-btn" id="clearHistoryBtn">
+            Clear All
+          </button>
+        </div>
+        <div class="history-list" id="historyList">
+          <div class="history-empty">No history yet</div>
+        </div>
       </div>
     </div>
 
-    <!-- History View -->
-    <div id="history-view" class="view-content hidden">
-      <div class="history-header">
-        <h4>Translation History</h4>
-        <button class="clear-history-btn" id="clearHistoryBtn">Clear All</button>
-      </div>
-      <div class="history-list" id="historyList">
-        <div class="history-empty">No history yet</div>
-      </div>
-    </div>
-  </div>
-
-
-  <script src="src/constants/languages.js"></script>
-  <script src="src/constants/services.js"></script>
-  <script src="src/constants/ui-constants.js"></script>
-  <script src="src/utils/dom-utils.js"></script>
-  <script src="src/utils/error-handler.js"></script>
-  <script src="src/services/phonetic-service.js"></script>
-  <script src="src/services/speech-service.js"></script>
-  <script src="src/services/storage-service.js"></script>
-  <script src="src/services/clipboard-service.js"></script>
-  <script src="src/services/translation/base-translator.js"></script>
-  <script src="src/services/translation/google-translator.js"></script>
-  <script src="src/services/translation/gemini-translator.js"></script>
-  <script src="src/services/translation/openai-translator.js"></script>
-  <script src="src/services/translation/translation-factory.js"></script>
-  <script src="src/controllers/translation-controller.js"></script>
-  <script src="src/ui/popup/popup-ui.js"></script>
-  <script src="popup.js"></script>
-</body>
-
+    <script src="src/constants/languages.js"></script>
+    <script src="src/constants/services.js"></script>
+    <script src="src/constants/ui-constants.js"></script>
+    <script src="src/utils/dom-utils.js"></script>
+    <script src="src/utils/error-handler.js"></script>
+    <script src="src/services/phonetic-service.js"></script>
+    <script src="src/services/speech-service.js"></script>
+    <script src="src/services/storage-service.js"></script>
+    <script src="src/services/clipboard-service.js"></script>
+    <script src="src/services/translation/base-translator.js"></script>
+    <script src="src/services/translation/google-translator.js"></script>
+    <script src="src/services/translation/gemini-translator.js"></script>
+    <script src="src/services/translation/openai-translator.js"></script>
+    <script src="src/services/translation/translation-factory.js"></script>
+    <script src="src/controllers/translation-controller.js"></script>
+    <script src="src/ui/popup/popup-ui.js"></script>
+    <script src="popup.js"></script>
+  </body>
 </html>

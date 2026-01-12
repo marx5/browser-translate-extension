@@ -44,7 +44,8 @@ class TranslationFactory {
             case 'gemini':
                 return new GeminiTranslator(
                     this.phoneticService,
-                    this.config.GEMINI_PROXY_URL
+                    this.config.GEMINI_PROXY_URL,
+                    this.config.GEMINI_API_KEY
                 );
 
             case 'openai':
