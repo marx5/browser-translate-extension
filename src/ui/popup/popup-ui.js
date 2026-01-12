@@ -424,6 +424,14 @@ class PopupUI {
         this.toggleVisibility(this.toggleTargetPhonetic, !!result.targetPhonetic);
         this.toggleVisibility(this.toggleSourcePhonetic, !!result.srcPhonetic);
 
+        // Reset to collapsed state by default
+        this.sourcePhoneticContainer.classList.add('collapsed');
+        this.targetPhoneticContainer.classList.add('collapsed');
+        this.toggleSourcePhonetic.textContent = '▼';
+        this.toggleSourcePhonetic.title = 'Expand phonetic';
+        this.toggleTargetPhonetic.textContent = '▼';
+        this.toggleTargetPhonetic.title = 'Expand phonetic';
+
         // Fallback notice
         if (result.fallbackNotice) {
             // You might want to add a UI element for notice if desired, 

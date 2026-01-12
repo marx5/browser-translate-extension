@@ -88,7 +88,10 @@
             id="inputText"
             placeholder="Enter text or select text on page..."
           ></textarea>
-          <div class="phonetic-container" id="sourcePhoneticContainer">
+          <div
+            class="phonetic-container collapsed"
+            id="sourcePhoneticContainer"
+          >
             <span class="phonetic" id="sourcePhonetic"></span>
             <div class="phonetic-actions">
               <button
@@ -101,9 +104,9 @@
               <button
                 class="phonetic-toggle-btn hidden"
                 id="toggleSourcePhonetic"
-                title="Toggle phonetic"
+                title="Expand phonetic"
               >
-                ▲
+                ▼
               </button>
             </div>
           </div>
@@ -133,7 +136,10 @@
               </div>
             </div>
             <div class="result-text" id="translatedText"></div>
-            <div class="phonetic-container" id="targetPhoneticContainer">
+            <div
+              class="phonetic-container collapsed"
+              id="targetPhoneticContainer"
+            >
               <span class="phonetic" id="phoneticText"></span>
               <div class="phonetic-actions">
                 <button
@@ -146,9 +152,9 @@
                 <button
                   class="phonetic-toggle-btn hidden"
                   id="toggleTargetPhonetic"
-                  title="Toggle phonetic"
+                  title="Expand phonetic"
                 >
-                  ▲
+                  ▼
                 </button>
               </div>
             </div>
